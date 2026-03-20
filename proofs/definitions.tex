@@ -1,0 +1,159 @@
+\section{Primitive Definitions}
+\label{sec:definitions}
+
+\begin{definition}[Agent Random Variable]
+\label{def:agent}
+An \emph{agent} is a Bernoulli random variable $A_i : \Omega \to \{0, 1\}$ defined on a
+probability space $(\Omega, \mathcal{F}, P)$, where $A_i = 1$ denotes successful completion
+of the agent's assigned subtask and $A_i = 0$ denotes failure. The \emph{capability} of
+agent $A_i$ is its success probability:
+\[
+  p_i \;:=\; P(A_i = 1) \;\in\; [0, 1].
+\]
+When all agents share a common capability we write $p_i = p$ for all $i$ and call $p$
+the \emph{uniform capability}.
+\end{definition}
+
+\begin{definition}[Sequential Pipeline]
+\label{def:pipeline}
+A \emph{sequential pipeline} of $n$ agents is an ordered tuple $(A_1, A_2, \ldots, A_n)$
+in which the system produces a correct output if and only if every agent succeeds.
+The \emph{system indicator} is
+\[
+  S_n \;:=\; \prod_{i=1}^{n} A_i,
+\]
+so $S_n = 1$ iff $A_i = 1$ for all $i \in \{1, \ldots, n\}$.
+\end{definition}
+
+\begin{definition}[System Success Probability]
+\label{def:psys}
+The \emph{system success probability} for a pipeline of $n$ agents is
+\[
+  P_{\mathrm{sys}}(n) \;:=\; P(S_n = 1) \;=\; P\!\Bigl(\,\bigcap_{i=1}^{n} \{A_i = 1\}\Bigr).
+\]
+When the agents are mutually independent this reduces to
+$P_{\mathrm{sys}}(n) = \prod_{i=1}^{n} p_i$.
+In the dependent case the chain rule gives
+$P_{\mathrm{sys}}(n) = \prod_{i=1}^{n} P(A_i = 1 \mid A_1 = 1, \ldots, A_{i-1} = 1)$.
+\end{definition}
+
+\begin{definition}[Coordination Cost Function --- Multiplicative Model]
+\label{def:coord-cost}
+Let $c \in [0,1)$ be the \emph{per-link coordination cost}. In a sequential pipeline of
+$n$ agents there are $(n-1)$ inter-agent links. Each link imposes a multiplicative
+overhead factor $(1-c)$ on the system. The \emph{effective system success probability}
+under coordination cost is
+\[
+  P_{\mathrm{eff}}(n) \;:=\; P_{\mathrm{sys}}(n) \cdot (1-c)^{n-1}.
+\]
+We adopt the multiplicative model (rather than an additive model $p_i \mapsto p_i - c$)
+for three reasons:
+\begin{enumerate}
+  \item It preserves the constraint $P_{\mathrm{eff}}(n) \in [0,1]$ automatically.
+  \item It composes naturally with the multiplicative structure of independent success
+        probabilities.
+  \item The additive model $p - c$ can become negative for $c > p$, requiring artificial
+        truncation.
+\end{enumerate}
+\end{definition}
+
+\begin{definition}[Net Benefit Function]
+\label{def:net-benefit}
+The \emph{net benefit} of adding the $(n+1)$-th agent to a pipeline is
+\[
+  B(n) \;:=\; P_{\mathrm{eff}}(n+1) - P_{\mathrm{eff}}(n).
+\]
+An agent addition is \emph{beneficial} if $B(n) > 0$ and \emph{detrimental} if $B(n) < 0$.
+\end{definition}
+
+\begin{definition}[Task Topology]
+\label{def:topology}
+A \emph{task topology} is a directed acyclic graph $G = (V, E)$ where each vertex
+$v \in V$ is an agent and each directed edge $(u, v) \in E$ indicates that agent $v$
+receives output from agent $u$. The three primitive topologies are:
+\begin{enumerate}
+  \item \textbf{Sequential (chain)}: $G$ is a directed path $A_1 \to A_2 \to \cdots \to A_n$.
+  \item \textbf{Parallel (ensemble)}: $G$ consists of $n$ agents with a common source and a
+        common sink (aggregator), with no edges between agents.
+  \item \textbf{Hybrid (DAG)}: $G$ is a general DAG combining sequential and parallel
+        substructures.
+\end{enumerate}
+\end{definition}
+
+\begin{definition}[Error Amplification Factor]
+\label{def:error-amp}
+For a sequential pipeline of $n$ agents with uniform capability $p$ and per-link
+coordination cost $c$, the \emph{system failure probability} is
+\[
+  F_{\mathrm{sys}}(n) \;=\; 1 - P_{\mathrm{eff}}(n).
+\]
+The \emph{error amplification factor} $\alpha$ is defined by the relation
+\[
+  P_{\mathrm{eff}}(n) \;=\; \alpha^{\,n-1} \cdot p,
+\]
+where $\alpha := p(1-c) \in (0,1)$ for $p < 1$ and $c > 0$. Equivalently, $-\ln \alpha$
+is the exponential decay rate of system reliability per additional agent.
+\end{definition}
+
+\section{Regime 2 --- Dependent Pipeline Definitions}
+
+\begin{definition}[Dependent Pipeline (Conditional Chain)]
+\label{def:dependent-pipeline}
+A \emph{dependent pipeline} of $n$ agents is a sequential pipeline $(A_1, \ldots, A_n)$
+in which the success of agent $A_i$ may depend on the outcomes of all preceding agents.
+The system succeeds if and only if all agents succeed. By the chain rule of probability:
+\[
+  P_{\mathrm{sys}}(n) \;=\; \prod_{i=1}^{n} P(A_i = 1 \mid A_1 = 1, \ldots, A_{i-1} = 1),
+\]
+with the convention that $P(A_1 = 1 \mid \emptyset) = P(A_1 = 1) = p_1$.
+
+We write $q_i := P(A_i = 1 \mid A_1 = 1, \ldots, A_{i-1} = 1)$ for the \emph{conditional
+success probability} of agent $i$ given that all predecessors succeeded. Then
+$P_{\mathrm{sys}}(n) = \prod_{i=1}^{n} q_i$.
+\end{definition}
+
+\begin{definition}[Coordination Gain Function]
+\label{def:coord-gain}
+For a pipeline of $n$ agents with marginal success probabilities $p_1, \ldots, p_n$,
+the \emph{coordination gain} is the difference in system success probability between
+a dependent (coordinated) pipeline and an independent pipeline:
+\[
+  \Delta(n) \;:=\; P_{\mathrm{sys}}^{\mathrm{dep}}(n) - P_{\mathrm{sys}}^{\mathrm{indep}}(n)
+  \;=\; \prod_{i=1}^{n} q_i \;-\; \prod_{i=1}^{n} p_i.
+\]
+Coordination is \emph{beneficial} if $\Delta(n) > 0$ and \emph{detrimental} if $\Delta(n) < 0$.
+\end{definition}
+
+\begin{definition}[Markov Pipeline]
+\label{def:markov-pipeline}
+A dependent pipeline is \emph{Markovian} if the conditional success probability of each
+agent depends only on the immediately preceding agent's outcome, not on the full history:
+\[
+  P(A_{i+1} = 1 \mid A_1 = 1, \ldots, A_i = 1) \;=\; P(A_{i+1} = 1 \mid A_i = 1) \;=:\; r_i
+\]
+for $i = 1, \ldots, n-1$, where $r_i \in [0,1]$ is the \emph{transition probability} from
+agent $i$ to agent $i+1$. In a Markov pipeline:
+\[
+  P_{\mathrm{sys}}(n) \;=\; p_1 \cdot \prod_{i=1}^{n-1} r_i.
+\]
+When all transition probabilities are equal, $r_i = r$, we write $P_{\mathrm{sys}}(n) = p_1 \cdot r^{n-1}$.
+\end{definition}
+
+\begin{definition}[Centralized Coordinator (Hub-and-Spoke)]
+\label{def:hub-spoke}
+A \emph{centralized coordinator} is a distinguished agent $V$ (the validator) that
+mediates the pipeline: each worker agent $A_i$ submits its output to $V$, which
+accepts or rejects before passing to $A_{i+1}$. The validator has detection probability
+$d \in [0,1]$ (probability of catching an error given one occurred) and false positive
+rate $f \in [0,1]$ (probability of rejecting correct output). The effective conditional
+success probability under centralized validation is:
+\[
+  q_i^{\mathrm{val}} \;=\; P(A_i \text{ accepted and correct} \mid \text{predecessors succeeded})
+  \;=\; p_i(1 - f) + (1 - p_i)(1 - d) \cdot 0 \;=\; p_i(1 - f).
+\]
+More precisely, the system succeeds at step $i$ if $A_i$ succeeds \emph{and} the validator
+does not falsely reject, giving $q_i^{\mathrm{val}} = p_i(1-f)$. Errors are caught
+with probability $d$, preventing downstream propagation.
+\end{definition}
+
+% End of definitions

@@ -1,0 +1,106 @@
+{
+  "name": "Research Paper — Claude Code + ai-jail",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/research",
+
+  // ── Mounts ────────────────────────────────────────────────────────────────
+  // Share host Claude credentials with the NON-ROOT user only.
+  // No /root/.claude mount — neither ai-jail nor claude should run as root.
+  "mounts": [
+    {
+      "source": "${localEnv:HOME}${localEnv:USERPROFILE}/.claude",
+      "target": "/home/vscode/.claude",
+      "type": "bind"
+    },
+    // Optional: share host gitconfig (read-only) for commits from container
+    {
+      "source": "${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig",
+      "target": "/home/vscode/.gitconfig",
+      "type": "bind",
+      "readonly": true
+    }
+  ],
+
+  // ── Lifecycle ─────────────────────────────────────────────────────────────
+  "postCreateCommand": "sudo chown -R vscode:vscode /workspaces/research /home/vscode/.claude && echo '✅ Devcontainer ready — run: ai-jail claude'",
+
+  // ── User ──────────────────────────────────────────────────────────────────
+  // CRITICAL: ensure everything runs as vscode, never root
+  "remoteUser": "vscode",
+  "containerUser": "vscode",
+  "updateRemoteUserUID": true,
+
+  // ── Container environment ─────────────────────────────────────────────────
+  "containerEnv": {
+    "CLAUDE_CONFIG_DIR": "/home/vscode/.claude",
+    // Inform ai-jail where bwrap lives (Debian default)
+    "BWRAP_BIN": "/usr/bin/bwrap"
+  },
+
+  // ── VS Code customizations ────────────────────────────────────────────────
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // Claude Code companion
+        "anthropic.claude-code",
+        // Markdown / writing
+        "yzhang.markdown-all-in-one",
+        "davidanson.vscode-markdownlint",
+        "bierner.markdown-mermaid",
+        // LaTeX (for paper writing)
+        "james-yu.latex-workshop",
+        // Python (research scripts)
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        // Git
+        "eamodio.gitlens",
+        // General DX
+        "christian-kohler.path-intellisense",
+        "streetsidesoftware.code-spell-checker",
+        "ms-azuretools.vscode-docker"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.shell.linux": "/bin/bash",
+        "[markdown]": {
+          "editor.wordWrap": "on",
+          "editor.quickSuggestions": {
+            "other": false,
+            "comments": false,
+            "strings": false
+          }
+        },
+        "[latex]": {
+          "editor.wordWrap": "on",
+          "editor.formatOnSave": false
+        },
+        "latex-workshop.latex.recipe.default": "latexmk (pdflatex)",
+        "latex-workshop.latex.tools": [
+          {
+            "name": "latexmk",
+            "command": "latexmk",
+            "args": [
+              "-synctex=1",
+              "-interaction=nonstopmode",
+              "-file-line-error",
+              "-pdf",
+              "-outdir=%OUTDIR%",
+              "%DOC%"
+            ],
+            "env": {}
+          }
+        ],
+        "latex-workshop.latex.recipes": [
+          {
+            "name": "latexmk (pdflatex)",
+            "tools": ["latexmk"]
+          }
+        ],
+        "latex-workshop.latex.autoBuild.run": "onSave",
+        "latex-workshop.view.pdf.viewer": "tab"
+      }
+    }
+  }
+}

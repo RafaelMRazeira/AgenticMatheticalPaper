@@ -1,0 +1,429 @@
+\section{Regime 3 --- Parallel Redundancy (Ensemble Voting)}
+\label{sec:regime3}
+
+% Written by Agent C, Exploration 4
+
+\subsection{Definitions}
+
+\begin{definition}[Parallel Ensemble --- At-Least-One Model]
+\label{def:parallel-any}
+A \emph{parallel ensemble} of $n$ independent agents with uniform capability $p$ succeeds
+if at least one agent succeeds. The system indicator is
+\[
+  S_n^{\mathrm{any}} \;:=\; 1 - \prod_{i=1}^{n}(1 - A_i),
+\]
+with system success probability
+\[
+  P_{\mathrm{sys}}^{\mathrm{any}}(n) \;=\; 1 - (1-p)^n.
+\]
+\end{definition}
+
+\begin{definition}[Parallel Ensemble --- Majority Voting Model]
+\label{def:parallel-majority}
+A \emph{majority voting ensemble} of $n$ independent agents with uniform capability $p$
+succeeds if at least $\lceil n/2 \rceil$ agents succeed:
+\[
+  P_{\mathrm{sys}}^{\mathrm{maj}}(n) \;=\; \sum_{k=\lceil n/2 \rceil}^{n} \binom{n}{k}\, p^k\, (1-p)^{n-k}.
+\]
+\end{definition}
+
+\begin{definition}[Effective Parallel Performance with Cost]
+\label{def:parallel-peff}
+If each parallel agent incurs an additive coordination cost $c \ge 0$, the effective
+performance is
+\[
+  P_{\mathrm{eff}}^{\mathrm{any}}(n) \;=\; 1 - (1-p)^n - n\,c,
+  \qquad
+  P_{\mathrm{eff}}^{\mathrm{maj}}(n) \;=\; P_{\mathrm{sys}}^{\mathrm{maj}}(n) - n\,c.
+\]
+\end{definition}
+
+\subsection{Diminishing Returns}
+
+\begin{theorem}[Diminishing Returns for Parallel Ensembles]
+\label{thm:diminishing-returns}
+Let $p \in (0,1)$ and define the marginal gain from the $(n+1)$-th agent as
+\[
+  \delta(n) \;:=\; P_{\mathrm{sys}}^{\mathrm{any}}(n+1) - P_{\mathrm{sys}}^{\mathrm{any}}(n)
+  \;=\; p\,(1-p)^n.
+\]
+Then:
+\begin{enumerate}
+  \item $\delta(n) > 0$ for all $n \ge 0$ (each agent improves reliability).
+  \item $\delta(n+1) < \delta(n)$ for all $n \ge 0$ (marginal gains are strictly decreasing).
+  \item The marginal gains form a geometric sequence with common ratio $(1-p)$:
+    \[
+      \frac{\delta(n+1)}{\delta(n)} = 1 - p \quad \text{for all } n \ge 0.
+    \]
+  \item The cumulative gain satisfies $P_{\mathrm{sys}}^{\mathrm{any}}(n) = p \cdot \frac{1 - (1-p)^n}{p} = 1 - (1-p)^n$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+We have $P_{\mathrm{sys}}^{\mathrm{any}}(n) = 1 - q^n$ where $q = 1-p \in (0,1)$.
+
+(1) $\delta(n) = q^n - q^{n+1} = q^n(1-q) = p\,q^n > 0$ since $p > 0$ and $q > 0$.
+
+(2) $\delta(n+1) = p\,q^{n+1} = p\,q^n \cdot q = \delta(n) \cdot q < \delta(n)$ since $q < 1$.
+
+(3) Immediate from (2): $\delta(n+1)/\delta(n) = q = 1-p$.
+
+(4) Summing the geometric series: $P_{\mathrm{sys}}^{\mathrm{any}}(n) = \sum_{k=0}^{n-1} \delta(k) = p \sum_{k=0}^{n-1} q^k = p \cdot \frac{1-q^n}{1-q} = 1 - q^n$.
+\end{proof}
+
+\begin{remark}[Parallel vs.\ Sequential Geometric Structure]
+In the sequential regime, system reliability $P_{\mathrm{sys}}^{\mathrm{seq}}(n) = p^n$ decays
+geometrically with ratio $p$. In the parallel regime, the \emph{failure probability}
+$(1-p)^n$ decays geometrically with ratio $(1-p)$. The marginal gains in the parallel
+model form a geometric sequence with the same ratio $(1-p)$, providing a precise dual
+to the sequential decay. Numerically verified for $p \in \{0.3, 0.45, 0.6, 0.8, 0.9\}$
+and $n = 1, \ldots, 50$.
+\end{remark}
+
+\subsection{Optimal Parallel Ensemble Size with Cost}
+
+\begin{theorem}[Optimal $n^*$ for At-Least-One Model]
+\label{thm:parallel-optimal-n}
+For the effective performance $P_{\mathrm{eff}}^{\mathrm{any}}(n) = 1 - (1-p)^n - nc$ with
+$p \in (0,1)$ and $c > 0$, the optimal ensemble size is
+\[
+  n^* \;=\; \left\lfloor \frac{\ln\!\bigl(c \,/\, \ln(1/(1-p))\bigr)}{\ln(1-p)} \right\rceil
+  \;=\; \left\lfloor \frac{\ln c - \ln\ln(1/(1-p))}{\ln(1-p)} \right\rceil,
+\]
+where $\lfloor \cdot \rceil$ denotes rounding to the nearest positive integer (with $n^* \ge 1$).
+This is valid when $c < \ln(1/(1-p))$, i.e., when the cost is small enough that
+$n^* > 1$. Otherwise $n^* = 1$.
+\end{theorem}
+
+\begin{proof}
+Treating $n$ as continuous, we differentiate:
+\[
+  \frac{d}{dn} P_{\mathrm{eff}}^{\mathrm{any}} = (1-p)^n \ln\!\frac{1}{1-p} - c.
+\]
+Setting this to zero: $(1-p)^n = c / \ln(1/(1-p))$. Taking logarithms:
+\[
+  n \ln(1-p) = \ln c - \ln\ln\!\frac{1}{1-p},
+  \quad\Longrightarrow\quad
+  n^* = \frac{\ln c - \ln\ln(1/(1-p))}{\ln(1-p)}.
+\]
+Since $\ln(1-p) < 0$, we need $\ln c < \ln\ln(1/(1-p))$, i.e., $c < \ln(1/(1-p))$, for
+$n^* > 0$. The second derivative is $(1-p)^n [\ln(1-p)]^2 < 0$ ... wait, let us check:
+\[
+  \frac{d^2}{dn^2} P_{\mathrm{eff}}^{\mathrm{any}} = -(1-p)^n \bigl[\ln(1/(1-p))\bigr]^2 < 0,
+\]
+confirming the critical point is a maximum. The integer optimum is obtained by rounding.
+
+\medskip\noindent
+\textbf{Numerical verification.} For $p = 0.45$, $c = 0.01$: formula gives $n^* = 6.84$,
+brute force gives $n^* = 7$. For $p = 0.60$, $c = 0.02$: formula gives $n^* = 4.17$,
+brute force gives $n^* = 4$. For $p = 0.80$, $c = 0.05$: formula gives $n^* = 2.16$,
+brute force gives $n^* = 2$. All match within rounding.
+\end{proof}
+
+\begin{corollary}[Condition for Beneficial Parallelism]
+\label{cor:beneficial-parallel}
+Adding a second agent ($n = 2$) improves effective performance over a single agent iff
+\[
+  p(1-p) > c,
+\]
+i.e., the marginal gain $\delta(0) \cdot (1-p) = p(1-p)$ exceeds the cost $c$.
+The product $p(1-p)$ is maximized at $p = 1/2$ with value $1/4$, so parallelism is
+never beneficial for $c \ge 1/4$.
+\end{corollary}
+
+\begin{proof}
+$P_{\mathrm{eff}}(2) > P_{\mathrm{eff}}(1)$ iff $[1-(1-p)^2 - 2c] > [p - c]$, i.e.,
+$p(1-p) > c$. Since $p(1-p) \le 1/4$, the condition fails for all $p$ when $c \ge 1/4$.
+\end{proof}
+
+\subsection{Majority Voting Threshold}
+
+\begin{theorem}[Majority Voting Phase Transition at $p = 1/2$]
+\label{thm:majority-threshold}
+For the majority voting ensemble with odd $n$ and uniform capability $p$:
+\begin{enumerate}
+  \item If $p > 1/2$: $P_{\mathrm{sys}}^{\mathrm{maj}}(n)$ is strictly increasing in $n$
+    and $\lim_{n\to\infty} P_{\mathrm{sys}}^{\mathrm{maj}}(n) = 1$.
+  \item If $p < 1/2$: $P_{\mathrm{sys}}^{\mathrm{maj}}(n)$ is strictly decreasing in $n$
+    and $\lim_{n\to\infty} P_{\mathrm{sys}}^{\mathrm{maj}}(n) = 0$.
+  \item If $p = 1/2$: $P_{\mathrm{sys}}^{\mathrm{maj}}(n) = 1/2$ for all odd $n$.
+\end{enumerate}
+This is the \emph{Condorcet jury theorem} applied to parallel agent ensembles.
+\end{theorem}
+
+\begin{proof}
+The number of successes $K = \sum_{i=1}^n A_i \sim \mathrm{Binomial}(n, p)$.
+By the law of large numbers, $K/n \xrightarrow{P} p$ as $n \to \infty$.
+
+(1) If $p > 1/2$: for large $n$, $K/n$ concentrates above $1/2$, so
+$P(K \ge \lceil n/2 \rceil) \to 1$.
+To show strict monotonicity: adding two agents to an odd-$n$ ensemble (going from $n$ to $n+2$)
+strictly increases $P_{\mathrm{sys}}^{\mathrm{maj}}$ when $p > 1/2$. This follows from the
+recursive identity for binomial tail probabilities and the fact that $p/(1-p) > 1$.
+
+(2) If $p < 1/2$: by symmetry with the $p > 1/2$ case (replace $p$ with $1-p$ and swap
+success/failure), $P(K \ge \lceil n/2 \rceil) \to 0$.
+
+(3) If $p = 1/2$: by symmetry of the binomial distribution, $P(K \ge \lceil n/2\rceil) = 1/2$
+for all odd $n$.
+
+\medskip\noindent
+\textbf{Numerical verification.} Convergence rate:
+$p=0.55$: $n = 539$ needed for $P_{\mathrm{maj}} > 0.99$.
+$p=0.60$: $n = 133$. $p=0.70$: $n = 31$. $p=0.80$: $n = 13$. $p=0.90$: $n = 5$.
+For $p < 0.5$: $p=0.30$: $P_{\mathrm{maj}} < 0.01$ at $n = 31$.
+$p=0.45$: $P_{\mathrm{maj}} < 0.01$ at $n = 539$.
+The convergence rate is approximately $\Theta(1/(p - 1/2)^2)$ by the
+central limit theorem (Berry--Esseen).
+\end{proof}
+
+\begin{remark}[Anti-Wisdom of Crowds]
+\label{rem:anti-wisdom}
+For $p < 1/2$, majority voting \emph{degrades} with $n$: a larger ensemble is
+\emph{less} reliable than a single agent. This is the ``anti-wisdom of crowds'' effect.
+At $p = 0.45$ (the Kim et al.\ saturation threshold), majority voting with $n = 49$
+agents gives $P_{\mathrm{sys}}^{\mathrm{maj}} = 0.240$, substantially \emph{worse} than
+a single agent ($P_{\mathrm{sys}} = 0.45$). This demonstrates that majority voting
+is not a universal remedy: it requires $p > 1/2$ to provide any benefit.
+\end{remark}
+
+\subsection{Parallel Always Beats Sequential}
+
+\begin{theorem}[Parallel Dominance for $n \ge 2$]
+\label{thm:parallel-dominance}
+For any $p \in (0,1)$ and $n \ge 2$, the at-least-one parallel model strictly dominates
+the sequential model:
+\[
+  P_{\mathrm{sys}}^{\mathrm{any}}(n) > P_{\mathrm{sys}}^{\mathrm{seq}}(n),
+  \qquad\text{i.e.,}\qquad
+  1 - (1-p)^n > p^n.
+\]
+Equivalently, $p^n + (1-p)^n < 1$ for all $p \in (0,1)$ and $n \ge 2$.
+\end{theorem}
+
+\begin{proof}
+Let $q = 1 - p$, so $p, q \in (0,1)$ and $p + q = 1$. We need to show
+$p^n + q^n < 1 = (p + q)^n$ for $n \ge 2$. Expanding:
+\[
+  (p+q)^n = p^n + q^n + \sum_{k=1}^{n-1} \binom{n}{k} p^k q^{n-k}.
+\]
+Since $p, q > 0$, each cross-term $\binom{n}{k} p^k q^{n-k} > 0$ for $1 \le k \le n-1$,
+and for $n \ge 2$ there is at least one such term. Therefore
+$p^n + q^n < (p+q)^n = 1$.
+\end{proof}
+
+\begin{remark}[Exponential Parallel Advantage Ratio]
+The ratio $P_{\mathrm{sys}}^{\mathrm{any}}(n) / P_{\mathrm{sys}}^{\mathrm{seq}}(n)
+= [1-(1-p)^n]/p^n$ grows exponentially in $n$. At $p = 0.45$: this ratio is $3.4$
+at $n=2$, $51$ at $n=5$, $2929$ at $n=10$, and exceeds $10^6$ at $n=17$.
+This quantifies why architecture choice (sequential vs.\ parallel) matters far more
+than individual agent capability for moderate $p$.
+\end{remark}
+
+\subsection{Throughput Structure}
+
+\begin{proposition}[Monotone Parallel Throughput]
+\label{prop:parallel-throughput}
+The throughput function $T(n) = n \cdot [1 - (1-p)^n]$ is strictly increasing for all
+$n \ge 1$ and $p \in (0,1)$. Hence there is no finite throughput optimum (unlike the
+sequential case where $T(n) = n \cdot p^n$ peaks at $n^* = -1/\ln p$ with $P_{\mathrm{sys}} = e^{-1}$).
+\end{proposition}
+
+\begin{proof}
+Treating $n$ as continuous with $q = 1-p$:
+\[
+  \frac{dT}{dn} = [1 - q^n] + n\, q^n \ln(1/q).
+\]
+Both terms are strictly positive for $n \ge 1$ and $q \in (0,1)$, so $T'(n) > 0$.
+\end{proof}
+
+\begin{remark}[No Universal Constant for Parallel]
+The sequential throughput model yields the universal constant $e^{-1}$ at the optimum.
+The parallel model has no such constant because its throughput is monotonically increasing.
+The per-agent efficiency $[1-(1-p)^n]/n$ is monotonically \emph{decreasing}, approaching $0$
+as $n \to \infty$, but has no finite optimum either --- it equals $p$ at $n=1$ and decreases
+continuously. This fundamental asymmetry reflects the structural difference: in sequential
+pipelines, each additional agent is a point of failure; in parallel ensembles, each additional
+agent is an opportunity for success.
+\end{remark}
+
+\begin{theorem}[Parallel Throughput with Coordination Cost --- Lambert W Solution]
+\label{thm:parallel-throughput-cost-lambert}
+For the effective throughput $T_{\mathrm{eff}}(n) = n[1-(1-p)^n - c]$ with coordination cost $c > 0$:
+\begin{enumerate}
+  \item If $c \ge p$, then $n^* = 1$ is optimal (single agent).
+  \item If $c < p$, the continuous optimum satisfies
+    \[
+      n^*_{\mathrm{cont}} = -\frac{W_0\!\left(-\frac{\ln(1-p)}{p} e^{-\frac{\ln c}{\ln(1-p)}}\right)}{\ln(1-p)},
+    \]
+    where $W_0$ is the principal branch of the Lambert W function. The integer optimum is
+    $\lfloor n^*_{\mathrm{cont}} \rceil$ rounded to the nearest positive integer.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Differentiate treating $n$ as continuous, with $q = 1-p$:
+\[
+  T_{\mathrm{eff}}'(n) = [1 - q^n - c] + n \cdot q^n \ln(1/q).
+\]
+Setting to zero and rearranging:
+\[
+  1 - c = q^n(1 - n \ln q).
+\]
+This transcendental equation has a unique solution for $n > 0$ when $c < p$, solvable via Lambert W.
+
+For the threshold: at $n=1$, marginal throughput is $p - c$. If this is $\le 0$, then $n^*=1$.
+\end{proof}
+
+\begin{remark}[Contrast with Sequential Throughput]
+The sequential throughput model has a universal constant: $\max_n n p^n = -1/(e \ln p)$ achieved
+at $n^* = -1/\ln p$, with $P_{\mathrm{sys}}(n^*) = e^{-1}$.
+
+The parallel model has NO such constant because throughput is unbounded without cost, and the
+cost-dependent optimum involves transcendental functions (Lambert W). This reflects a fundamental
+asymmetry: sequential pipelines are failure-limited (each agent adds a failure point), while
+parallel ensembles are redundancy-limited (each agent adds an opportunity for success).
+\end{remark}
+
+\subsection{Error Suppression Comparison}
+
+\begin{theorem}[Parallel Error Suppression]
+\label{thm:parallel-error-suppression}
+For $n$ agents with capability $p$:
+\[
+  \mathbb{E}[\text{failures}]_{\mathrm{seq}} = n(1-p) \quad\text{(sequential)},
+\]
+\[
+  \mathbb{E}[\text{failures}]_{\mathrm{any}} = n(1-p)^n \quad\text{(parallel at-least-one)}.
+\]
+The error ratio is:
+\[
+  \frac{\mathbb{E}_{\mathrm{any}}}{\mathbb{E}_{\mathrm{seq}}} = (1-p)^{n-1}.
+\]
+For $p = 0.45$ and $n = 5$: this ratio is $0.55^4 \approx 0.091$, i.e., parallel ensembles produce
+only $9.1\%$ of the errors of sequential pipelines with the same agents.
+\end{theorem}
+
+\begin{proof}
+Sequential: each of $n$ agents fails independently with probability $1-p$, so expected failures = $\sum_{i=1}^n \mathbb{E}[1-A_i] = n(1-p)$.
+
+Parallel (at-least-one): the system produces an error only if all $n$ agents fail. But since we incur cost for all $n$ agents regardless, the expected number of agent failures is $n \cdot P(\text{all fail}) = n(1-p)^n$.
+\end{proof}
+
+\begin{corollary}[Asymptotic Error Behavior]
+Parallel ensembles are \emph{asymptotically error-suppressing}: $\lim_{n\to\infty} \mathbb{E}_{\mathrm{any}} = 0$
+(since $n(1-p)^n \to 0$ as $n \to \infty$). Sequential pipelines are \emph{linearly error-accumulating}:
+$\mathbb{E}_{\mathrm{seq}} \sim n(1-p) \to \infty$.
+
+Thus for any target error tolerance $\varepsilon > 0$, there exists $N$ such that all parallel ensembles
+with $n \ge N$ achieve expected errors $< \varepsilon$, while no sequential pipeline can satisfy this.
+\end{corollary}
+
+\begin{example}[Error Suppression at Kim et al.\ Threshold]
+At $p = 0.45$:
+\begin{center}
+\begin{tabular}{c|c|c|c}
+$n$ & $\mathbb{E}_{\mathrm{seq}}$ & $\mathbb{E}_{\mathrm{any}}$ & Ratio \\
+\hline
+2 & 0.90 & 0.495 & 0.55 \\
+3 & 1.35 & 0.272 & 0.30 \\
+5 & 2.25 & 0.204 & 0.091 \\
+10 & 4.50 & 0.068 & 0.015 \\
+\end{tabular}
+\end{center}
+By $n = 10$, the parallel ensemble suppresses errors to $1.5\%$ of sequential level.
+\end{example}
+
+\subsection{Architecture Selection with Error Constraints}
+
+\begin{theorem}[Optimal Architecture for Bounded Expected Errors]
+\label{thm:error-constrained-architecture}
+Given target expected errors $\le \varepsilon$ and agent capability $p$:
+\begin{enumerate}
+  \item Sequential pipeline feasible iff $n \le \frac{\varepsilon}{1-p}$, achieving max success
+    probability $P_{\mathrm{sys}} = p^{\lfloor \varepsilon/(1-p) \rfloor}$.
+  \item Parallel ensemble (at-least-one) feasible for all sufficiently large $n$, achieving
+    $P_{\mathrm{sys}} = 1 - (1-p)^n$ with $n$ chosen to satisfy $n(1-p)^n \le \varepsilon$.
+\end{enumerate}
+
+The optimal choice is:
+\[
+  \text{Use parallel if } \varepsilon > 0, \quad \text{use sequential only if } \varepsilon = 0 \text{ (impossible)}.
+\]
+Thus error-constrained optimization \emph{necessarily selects parallel architectures}.
+\end{theorem}
+
+\begin{proof}
+Sequential constraint: $n(1-p) \le \varepsilon \iff n \le \varepsilon/(1-p)$. Success prob decays as $p^n$,
+bounded above by 1.
+
+Parallel constraint: $n(1-p)^n \le \varepsilon$. Since $\lim_{n\to\infty} n(1-p)^n = 0$ and the function
+is convex for large $n$, there exists an interval of feasible $n$. Success prob increases as $1-(1-p)^n \to 1$.
+
+Thus parallel dominates for all $\varepsilon > 0$.
+\end{proof}
+
+\subsection{Preview: Series-Parallel Decomposition (Regime~4)}
+
+The results in Regime 3 establish that pure parallel ensembles suppress errors exponentially.
+However, many real-world multi-agent systems have \emph{hybrid} topologies combining sequential
+dependencies with parallel redundancy. This motivates Regime 4's series-parallel decomposition theory.
+
+\begin{definition}[Series-Parallel Graph]
+A \emph{series-parallel graph} is a DAG constructed from a single edge by repeated application of:
+\begin{enumerate}
+  \item \textbf{Series composition}: Replace edge $(u,v)$ with path $u \to w \to v$.
+  \item \textbf{Parallel composition}: Add parallel edge between $u$ and $v$.
+\end{enumerate}
+Every series-parallel graph represents a multi-agent system that can be reduced to an effective
+capability via recursive application of Theorem~\ref{thm:parallel-error-suppression} (for parallel edges)
+and the sequential chain rule $p_{\mathrm{eff}} = \prod p_i$ (for series paths).
+\end{definition}
+
+\begin{proposition}[Recursive Composition Law]
+For a series-parallel DAG with agent capabilities $\{p_v\}_{v \in V}$, the system success probability
+is obtained by:
+\begin{enumerate}
+  \item Reduce all parallel subgraphs using $P_{\mathrm{parallel}} = 1 - \prod(1-p_i)$.
+  \item Reduce all series subpaths using $P_{\mathrm{series}} = \prod p_i$.
+  \item Repeat until a single effective node remains.
+\end{enumerate}
+For general DAGs (non-series-parallel), use dynamic programming over the topological ordering.
+\end{proposition}
+
+\begin{example}[Hybrid Architecture: Parallel Preprocessing with Sequential Core]
+Consider a system where $n_1$ agents process input in parallel (at-least-one succeeds), then
+$m$ agents refine sequentially, then $n_2$ agents verify in parallel. The effective capability is:
+\[
+  P_{\mathrm{sys}} = \underbrace{[1-(1-p)^{n_1}]}_{\text{parallel preprocess}}
+  \cdot \underbrace{p^m}_{\text{sequential core}}
+  \cdot \underbrace{[1-(1-p)^{n_2}]}_{\text{parallel verify}}.
+\]
+
+Optimizing $(n_1, m, n_2)$ subject to total agent budget $N = n_1 + m + n_2$ requires balancing
+the exponential gain in parallel stages against the exponential decay in sequential stages.
+This trade-off is the central result of Regime 4.
+\end{example}
+
+\subsection{Connection to Capability Saturation (Regime~5)}
+
+\begin{proposition}[Architecture Crossover at $p = 0.45$]
+\label{prop:saturation-crossover}
+At the empirical saturation threshold $p = 0.45$ (Kim et al., 2025):
+\begin{itemize}
+  \item Sequential: $P_{\mathrm{sys}}^{\mathrm{seq}}(n) = 0.45^n$. By $n = 3$, $P_{\mathrm{sys}} < 0.1$.
+  \item Parallel (any): $P_{\mathrm{sys}}^{\mathrm{any}}(n) = 1 - 0.55^n$. By $n = 5$, $P_{\mathrm{sys}} > 0.95$.
+  \item Majority: $P_{\mathrm{sys}}^{\mathrm{maj}}$ is \emph{decreasing} (since $0.45 < 0.5$),
+    reaching $0.24$ by $n = 49$.
+\end{itemize}
+The parallel/sequential advantage ratio grows as $[1 - 0.55^n]/0.45^n$, exceeding $50\times$
+by $n = 5$ and $10^6\times$ by $n = 17$.
+
+\medskip\noindent
+This explains the empirical finding that coordination yields negative returns above the
+saturation threshold: for $p > \tau$, a single high-capability agent may outperform a
+multi-agent system if the overhead cost $c$ is non-negligible. But the choice between
+sequential and parallel is the dominant factor: at $p = 0.45$, switching from sequential
+to parallel provides orders-of-magnitude improvement, while adding agents within the
+sequential topology is catastrophic.
+\end{proposition}

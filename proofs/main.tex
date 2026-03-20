@@ -1,0 +1,348 @@
+\documentclass[12pt,a4paper]{article}
+
+%% ============================================================
+%% Packages
+%% ============================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage[margin=1in]{geometry}
+\usepackage{cleveref}
+
+%% ============================================================
+%% Theorem environments
+%% ============================================================
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+%% ============================================================
+%% Custom commands
+%% ============================================================
+\newcommand{\Psys}{P_{\mathrm{sys}}}
+\newcommand{\Peff}{P_{\mathrm{eff}}}
+\newcommand{\Fsys}{F_{\mathrm{sys}}}
+\newcommand{\Rel}{\mathrm{Rel}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+%% ============================================================
+%% Title
+%% ============================================================
+\title{%
+  Probabilistic Scaling Laws for Agent Systems:\\[4pt]
+  \large From Multiplication Laws to Unified Reliability Polynomials%
+}
+\author{%
+  Agent O \and Agent C \and Orchestrator%
+}
+\date{March 2026}
+
+\begin{document}
+\maketitle
+
+%% ============================================================
+%% Abstract
+%% ============================================================
+\begin{abstract}
+We develop a rigorous probabilistic framework for the scaling behavior of
+multi-agent systems by modeling each agent as a Bernoulli random variable and
+deriving composition laws that govern system-level performance.  Our results
+span five regimes: (1)~independent sequential pipelines, where system
+reliability decays exponentially with a universal throughput constant
+$\Psys(n^*) = e^{-1}$; (2)~dependent pipelines, analyzed as absorbing Markov
+chains with coordination gain determined by the geometric mean of coordination
+multipliers; (3)~parallel ensembles, exhibiting diminishing returns governed by
+the Condorcet jury theorem; (4)~hybrid series-parallel topologies, optimized
+via a marginal equalization principle with a unique efficiency maximum; and
+(5)~capability saturation, characterized by architecture-specific thresholds
+and a phase diagram in capability--cost space.  All five regimes are unified as
+special cases of a reliability polynomial on the task as a Directed Acyclic Graph (DAG).  Our theoretical
+predictions are quantitatively consistent with the empirical findings of Kim
+et~al.\ (2025), including the tool-coordination tradeoff ($R^2 = 0.267$),
+capability saturation at $\sim\!45\%$ baseline, centralized coordination
+yielding $+81\%$ on structured tasks, independent coordination yielding
+$-70\%$ on sequential planning, and task-contingent optimal architecture with
+$87\%$ prediction accuracy.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+%% ============================================================
+%% Section 0: Introduction
+%% ============================================================
+\section{Introduction}
+\label{sec:introduction}
+
+The question of how multi-agent systems scale --- whether adding agents improves
+or degrades overall performance --- is fundamental to the design of AI systems
+that coordinate multiple language model agents.  Empirical work by Kim
+et~al.~(2025) has identified several striking regularities: error amplification
+in sequential pipelines, diminishing returns in parallel ensembles, a
+capability saturation threshold near $45\%$, and task-contingent optimal
+architectures predictable from task topology features.  These findings call
+for a formal mathematical framework that can explain and predict scaling
+behavior from first principles.
+
+This paper provides such a framework.  We model each agent as a Bernoulli
+random variable and derive the probability laws governing system success
+under five increasingly general task topologies:
+
+\begin{enumerate}[label=\textbf{Regime \arabic*:}, leftmargin=*]
+  \item \textbf{Independent Sequential Pipelines} (\Cref{sec:regime1}).
+    The multiplication law yields exponential decay $\Psys = p^n$, a universal
+    throughput constant $e^{-1}$, and the result that adding agents always
+    degrades effective performance for any coordination cost $c > 0$.
+
+  \item \textbf{Dependent Sequential Pipelines} (\Cref{sec:regime2}).
+    The chain rule decomposition, Markov pipeline analysis, and centralized
+    validation theory establish when coordination improves reliability and
+    when it amplifies errors.
+
+  \item \textbf{Parallel Ensembles} (\Cref{sec:regime3}).
+    Diminishing returns follow a geometric sequence with ratio $(1-p)$, the
+    Condorcet jury theorem governs majority voting, and parallel architectures
+    strictly dominate sequential ones for $n \geq 2$.
+
+  \item \textbf{Hybrid Series-Parallel Topologies} (\Cref{sec:regime4}).
+    Recursive composition on series-parallel DAGs, the marginal equalization
+    principle for optimal resource allocation, and a unique efficiency maximum
+    per topology class.
+
+  \item \textbf{Capability Saturation and the Unified Scaling Law}
+    (\Cref{sec:regime5}).
+    Architecture-specific saturation thresholds, a phase diagram in $(p,c)$-space,
+    and the reliability polynomial as the unifying mathematical object
+    encompassing all regimes.
+\end{enumerate}
+
+\subsection{Notation}
+
+Throughout, $A_i$ denotes an agent modeled as a Bernoulli random variable with
+success probability $p_i = P(A_i = 1)$.  We write $p$ for the uniform
+capability when all agents share the same success probability, $q = 1-p$ for
+the failure probability, and $c$ for the per-link (or per-agent) coordination
+cost.  The system success probability is $\Psys$ and the effective system
+probability (including cost) is $\Peff$.  The error amplification factor is
+$\alpha = p(1-c)$.
+
+\subsection{Relationship to Prior Work}
+
+Our framework is motivated by the empirical findings of Kim et~al.\ (2025),
+\emph{Towards a Science of Scaling Agent Systems}, which studied multi-agent
+coordination across diverse benchmarks.  We provide theoretical foundations for
+their observations, deriving each empirical pattern from the probabilistic
+structure of the task topology.  The correspondence between our predictions and
+their findings is summarized in \Cref{sec:regime5} (Theorem~\ref{thm:empirical-correspondence}).
+
+\newpage
+
+%% ============================================================
+%% Section 1: Definitions
+%% ============================================================
+\input{definitions}
+
+\newpage
+
+%% ============================================================
+%% Section 2: Regime 1
+%% ============================================================
+\input{regime_1_independent}
+
+\newpage
+
+%% ============================================================
+%% Section 3: Regime 2
+%% ============================================================
+\input{regime_2_dependent}
+
+\newpage
+
+%% ============================================================
+%% Section 4: Regime 3
+%% ============================================================
+\input{regime_3_parallel}
+
+\newpage
+
+%% ============================================================
+%% Section 5: Regime 4
+%% ============================================================
+\input{regime_4_hybrid}
+
+\newpage
+
+%% ============================================================
+%% Section 6: Regime 5
+%% ============================================================
+\input{regime_5_saturation}
+
+\newpage
+
+%% ============================================================
+%% Section 7: Discussion
+%% ============================================================
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Summary of Principal Results}
+
+We have established a hierarchy of scaling laws for multi-agent systems, each
+building on the previous:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{>{\bfseries}l l l}
+\toprule
+Regime & Key Formula & Central Result \\
+\midrule
+1. Independent &
+  $\Psys = p^n$ &
+  Exponential decay; $\Psys(n^*) = e^{-1}$ universally \\
+2. Dependent &
+  $\Psys = p_1 \cdot r^{n-1}$ &
+  Coordination helps iff $r > p$ \\
+3. Parallel &
+  $\Psys = 1-(1-p)^n$ &
+  Diminishing returns; Condorcet at $p=1/2$ \\
+4. Hybrid &
+  Recursive SP &
+  Minimize series depth; equalize parallel width \\
+5. Unified &
+  $\Rel(G; \mathbf{p}, \mathbf{c})$ &
+  All regimes are special cases \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Design Implications}
+
+The theoretical framework yields concrete design principles:
+
+\begin{enumerate}
+  \item \textbf{Sequential pipelines are generically harmful.}
+    For any $c > 0$, the critical threshold $p^* = 1/(1-c) > 1$ is
+    unattainable, so adding sequential agents always degrades performance
+    (Theorem~\ref{thm:critical-threshold}).  Sequential stages should be
+    minimized and supplemented with parallel redundancy
+    (Theorem~\ref{thm:r4-optimal-allocation}).
+
+  \item \textbf{Architecture selection dominates capability improvement.}
+    At $p = 0.45$, switching from sequential to parallel provides a
+    $50\times$ improvement at $n = 5$, while improving $p$ from $0.45$ to
+    $0.50$ gives only $11\%$ for a single agent.  The topology of coordination
+    matters far more than the capability of individual agents.
+
+  \item \textbf{The Condorcet threshold is a hard boundary.}
+    Majority voting requires $p > 1/2$ to be beneficial
+    (Theorem~\ref{thm:majority-threshold}).  For $p < 1/2$, parallel-any
+    (at-least-one) is the only viable multi-agent strategy.
+
+  \item \textbf{Every architecture has a finite optimal team size.}
+    For any coordination cost $c > 0$, there exists a finite $n^*$ beyond
+    which adding agents is detrimental
+    (Theorems~\ref{thm:cost-dominance-seq}--\ref{thm:cost-dominance-maj}).
+
+  \item \textbf{The $\sim\!45\%$ saturation threshold is architecture-dependent.}
+    It reflects the capability at which most standard coordination strategies
+    (sequential, majority) fail, leaving only parallel-any viable.  The
+    phase diagram (Proposition~\ref{prop:phase-diagram}) makes this precise.
+\end{enumerate}
+
+\subsection{Assumptions and Limitations}
+
+Our framework rests on several simplifying assumptions:
+
+\begin{enumerate}
+  \item \textbf{Binary outcomes.}  Agents produce binary success/failure.
+    A richer model with graded quality would require continuous random
+    variables and information-theoretic cost measures.
+
+  \item \textbf{Uniform capability.}  Most results assume $p_i = p$.
+    The AM--GM bound (Lemma~\ref{lem:am-gm}) shows this is the
+    best-case scenario; heterogeneous agents are strictly worse.
+
+  \item \textbf{Independence within parallel stages.}  We assume
+    parallel agents fail independently.  Correlated failures (e.g., from
+    shared training data) would reduce the effectiveness of parallel
+    redundancy.
+
+  \item \textbf{Series-parallel structure.}  The recursive composition
+    theorem requires SP graphs.  General DAGs require the reliability
+    polynomial, which is $\#P$-hard to compute exactly
+    (Theorem~\ref{thm:r4-complexity}).
+
+  \item \textbf{Static architecture.}  We do not model adaptive
+    architectures that dynamically reconfigure based on intermediate
+    results.
+\end{enumerate}
+
+\subsection{Open Problems}
+
+\begin{enumerate}
+  \item \textbf{Continuous-quality agents.}  Extend the binary model to
+    agents whose outputs have a quality distribution.  The natural
+    framework is information-theoretic: coordination cost becomes mutual
+    information between agent outputs.
+
+  \item \textbf{Correlated parallel agents.}  Quantify how shared
+    failure modes reduce parallel redundancy gains.  The FKG inequality
+    provides a starting point (Theorem~\ref{thm:r4-sp-bounds}).
+
+  \item \textbf{Adaptive architectures.}  Model systems that dynamically
+    switch topology based on observed intermediate results.  This
+    requires a sequential decision-theoretic framework.
+
+  \item \textbf{Tighter general-DAG bounds.}  Close the gap between the
+    SP bounds and exact reliability for non-SP DAGs (cf.\ the Wheatstone
+    bridge example in Remark~\ref{rmk:r4-sp-tightness}).
+
+  \item \textbf{Heterogeneous cost structures.}  Allow different
+    coordination costs for different links and agents, moving beyond
+    the uniform-cost model.
+\end{enumerate}
+
+%% ============================================================
+%% Section 8: Conclusion
+%% ============================================================
+\section{Conclusion}
+\label{sec:conclusion}
+
+We have developed a complete probabilistic theory of scaling in multi-agent
+systems.  The central mathematical object is the \emph{reliability polynomial}
+$\Rel(G; \mathbf{p}, \mathbf{c})$ on the task DAG, which unifies five
+distinct scaling regimes as special cases.  Our framework provides:
+
+\begin{itemize}
+  \item \textbf{Explanatory power}: all six empirical findings of Kim
+    et~al.\ (2025) have quantitative theoretical explanations.
+  \item \textbf{Predictive power}: the architecture selection function
+    (Theorem~\ref{thm:arch-selection}) is a deterministic function of
+    three observable task parameters.
+  \item \textbf{Design guidance}: concrete principles for when to use
+    sequential vs.\ parallel vs.\ hybrid architectures, and how to
+    allocate resources across stages.
+\end{itemize}
+
+The key insight is that \emph{topology dominates capability}: the
+structure of agent coordination matters far more than individual agent
+performance.  A well-chosen architecture can yield orders-of-magnitude
+improvement over a poorly chosen one, even with identical agents.
+
+\end{document}

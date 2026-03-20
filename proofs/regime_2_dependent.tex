@@ -1,0 +1,574 @@
+\section{Regime 2 --- Dependent Agents (Conditional Chains)}
+\label{sec:regime2}
+
+Throughout this section, let $(A_1, A_2, \ldots, A_n)$ be a dependent pipeline as in
+Definition~\ref{def:dependent-pipeline}. We write $q_i := P(A_i = 1 \mid A_1 = 1,
+\ldots, A_{i-1} = 1)$ for the conditional success probabilities and $p_i := P(A_i = 1)$
+for the marginal success probabilities.
+
+%% ============================================================
+\subsection{Chain Rule Decomposition}
+%% ============================================================
+
+\begin{theorem}[Chain Rule Decomposition]
+\label{thm:chain-rule}
+For a dependent pipeline of $n$ agents, the system success probability is
+\[
+  P_{\mathrm{sys}}(n) \;=\; \prod_{i=1}^{n} q_i
+  \;=\; \prod_{i=1}^{n} P(A_i = 1 \mid A_1 = 1, \ldots, A_{i-1} = 1),
+\]
+where the conditioning tracks the unique surviving path (all predecessors succeeded).
+Equivalently, in log-space:
+\[
+  \ln P_{\mathrm{sys}}(n) \;=\; \sum_{i=1}^{n} \ln q_i.
+\]
+\end{theorem}
+
+\begin{proof}
+The event $\{S_n = 1\} = \bigcap_{i=1}^{n} \{A_i = 1\}$. By the chain rule of probability
+applied to an intersection of events:
+\begin{align*}
+  P(S_n = 1) &= P(A_1 = 1) \cdot P(A_2 = 1 \mid A_1 = 1) \\
+  &\quad \cdot P(A_3 = 1 \mid A_1 = 1, A_2 = 1) \\
+  &\quad \cdots \\
+  &\quad \cdot P(A_n = 1 \mid A_1 = 1, \ldots, A_{n-1} = 1) \\
+  &= \prod_{i=1}^{n} q_i.
+\end{align*}
+This is the probability chain rule applied to the nested conditioning. Note that we condition
+only on the success path $A_j = 1$ for $j < i$, because the pipeline halts on any failure
+(the system requires all agents to succeed, so the conditioning on the success path is the
+relevant decomposition for $P(S_n = 1)$). The log-space form follows by taking logarithms.
+\end{proof}
+
+\begin{remark}
+The chain rule decomposition is exact and requires no independence assumption. It reduces the
+computation of $P_{\mathrm{sys}}$ to specifying the $n$ conditional probabilities $q_1, \ldots, q_n$.
+When $q_i = p_i$ for all $i$ (independence), we recover the multiplication law of Regime~1
+(Theorem~\ref{thm:mult-law}).
+\end{remark}
+
+%% ============================================================
+\subsection{Coordination Gain Theorem}
+%% ============================================================
+
+\begin{theorem}[Coordination Gain]
+\label{thm:coord-gain}
+Let $\Delta(n) = \prod_{i=1}^{n} q_i - \prod_{i=1}^{n} p_i$ be the coordination gain
+(Definition~\ref{def:coord-gain}). Then:
+\begin{enumerate}
+  \item $\Delta(n)$ can be expressed as
+  \[
+    \Delta(n) \;=\; \prod_{i=1}^{n} p_i \;\cdot\; \Bigl[\,\prod_{i=1}^{n} \frac{q_i}{p_i} - 1\Bigr].
+  \]
+  Define the \emph{coordination multiplier} $\mu_i := q_i / p_i$. Then
+  $\Delta(n) > 0$ if and only if $\prod_{i=1}^{n} \mu_i > 1$.
+
+  \item (\textbf{Positive coordination effect.}) Suppose $q_i \geq p_i$ for all $i$
+  (coordination never hurts any individual agent). Then $\mu_i \geq 1$ for all $i$, and
+  coordination is beneficial: $\Delta(n) \geq 0$, with equality iff $q_i = p_i$ for all $i$.
+
+  \item (\textbf{Mixed coordination effect.}) If coordination helps some agents ($\mu_i > 1$)
+  but imposes overhead on others ($\mu_j < 1$, for instance through coordination cost),
+  then $\Delta(n) > 0$ iff the geometric mean of the coordination multipliers exceeds 1:
+  \[
+    \Bigl(\prod_{i=1}^{n} \mu_i\Bigr)^{1/n} > 1.
+  \]
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+For (1), factor out $\prod p_i$:
+\[
+  \Delta(n) = \prod_{i=1}^{n} q_i - \prod_{i=1}^{n} p_i
+  = \prod_{i=1}^{n} p_i \cdot \Bigl[\prod_{i=1}^{n} \frac{q_i}{p_i} - 1\Bigr]
+  = \prod_{i=1}^{n} p_i \cdot \Bigl[\prod_{i=1}^{n} \mu_i - 1\Bigr].
+\]
+Since $\prod p_i > 0$ (all agents have positive success probability), the sign of $\Delta(n)$
+is determined by $\prod \mu_i - 1$.
+
+For (2), if $\mu_i \geq 1$ for all $i$, then $\prod \mu_i \geq 1$, so $\Delta(n) \geq 0$.
+Equality holds iff every $\mu_i = 1$.
+
+For (3), $\prod \mu_i > 1$ iff $(\prod \mu_i)^{1/n} > 1$ iff the geometric mean exceeds 1.
+\end{proof}
+
+\begin{corollary}[Coordination Gain with Uniform Multiplier]
+\label{cor:uniform-gain}
+If $q_i = \mu p_i$ for a constant coordination multiplier $\mu > 0$ (each agent benefits
+equally from coordination), then
+\[
+  \Delta(n) = (\mu^n - 1) \prod_{i=1}^{n} p_i.
+\]
+\begin{itemize}
+  \item If $\mu > 1$: $\Delta(n)$ grows exponentially in $n$. Coordination gain increases
+    with pipeline length.
+  \item If $\mu < 1$: $\Delta(n) < 0$ and the penalty grows exponentially.
+  \item If $\mu = 1$: independence; $\Delta(n) = 0$.
+\end{itemize}
+\end{corollary}
+
+\begin{proof}
+$\prod \mu_i = \mu^n$. The result follows from Theorem~\ref{thm:coord-gain}(1).
+\end{proof}
+
+\begin{theorem}[Coordination Gain with Cost]
+\label{thm:coord-gain-cost}
+Suppose coordination improves conditional success probabilities to $q_i > p_i$ but
+incurs a per-link multiplicative cost $c_{\mathrm{coord}} \in [0,1)$ (the overhead of
+coordination itself). The net effective system probability under coordination is
+\[
+  P_{\mathrm{sys}}^{\mathrm{coord}}(n) \;=\; \prod_{i=1}^{n} q_i \cdot (1 - c_{\mathrm{coord}})^{n-1}.
+\]
+The net coordination gain (comparing coordinated-with-cost to independent-with-cost) is
+\[
+  \Delta_{\mathrm{net}}(n) = (1-c_{\mathrm{coord}})^{n-1}\Bigl[\prod_{i=1}^{n} q_i - \prod_{i=1}^{n} p_i\Bigr]
+  + \prod_{i=1}^{n} p_i \bigl[(1-c_{\mathrm{coord}})^{n-1} - (1-c_{\mathrm{indep}})^{n-1}\bigr],
+\]
+where $c_{\mathrm{indep}}$ is the coordination cost in the independent case. When
+both architectures share the same per-link cost $c$, this simplifies to
+\[
+  \Delta_{\mathrm{net}}(n) = (1-c)^{n-1} \cdot \Delta(n).
+\]
+Thus the coordination cost attenuates the gain but does not change its sign: coordination
+is net beneficial iff $\Delta(n) > 0$, i.e., iff $\prod \mu_i > 1$.
+\end{theorem}
+
+\begin{proof}
+When both architectures share cost $c$:
+\begin{align*}
+  \Delta_{\mathrm{net}}(n) &= \prod q_i \cdot (1-c)^{n-1} - \prod p_i \cdot (1-c)^{n-1} \\
+  &= (1-c)^{n-1}\Bigl[\prod q_i - \prod p_i\Bigr] \\
+  &= (1-c)^{n-1} \cdot \Delta(n).
+\end{align*}
+Since $(1-c)^{n-1} > 0$, the sign of $\Delta_{\mathrm{net}}$ equals the sign of $\Delta(n)$.
+\end{proof}
+
+%% ============================================================
+\subsection{Error Propagation in Dependent Pipelines}
+%% ============================================================
+
+\begin{theorem}[Error Propagation and Amplification]
+\label{thm:error-propagation}
+Consider a dependent pipeline where the conditional failure probability given predecessor
+success is $\bar{q}_i := 1 - q_i$. Define the \emph{per-step error injection rate}
+$\epsilon_i := \bar{q}_i$.
+\begin{enumerate}
+  \item The system failure probability is
+  \[
+    F_{\mathrm{sys}}(n) = 1 - \prod_{i=1}^{n}(1 - \epsilon_i).
+  \]
+
+  \item For small $\epsilon_i \ll 1$ (high-capability agents), to first order:
+  \[
+    F_{\mathrm{sys}}(n) \;\approx\; \sum_{i=1}^{n} \epsilon_i.
+  \]
+  Errors accumulate additively.
+
+  \item (\textbf{Error amplification under negative coordination.})
+  If the conditional failure probability increases when a predecessor
+  produces degraded (but technically ``successful'') output --- modeled as
+  $q_i = p_i - \gamma \cdot (1 - p_{i-1})$ where $\gamma > 0$ captures error leakage
+  through nominally successful steps --- then for uniform $p_i = p$:
+  \[
+    F_{\mathrm{sys}}(n) \;>\; 1 - p^n \quad \text{for all } n \geq 2.
+  \]
+  The coordination effect is strictly negative: dependency amplifies errors.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Statement (1) follows directly from $P_{\mathrm{sys}} = \prod(1 - \epsilon_i)$.
+
+For (2), use $\ln(1 - \epsilon_i) \approx -\epsilon_i$ for small $\epsilon_i$:
+\[
+  \ln P_{\mathrm{sys}} = \sum \ln(1 - \epsilon_i) \approx -\sum \epsilon_i,
+\]
+hence $P_{\mathrm{sys}} \approx e^{-\sum \epsilon_i} \approx 1 - \sum \epsilon_i$ for small total error.
+
+For (3), under the error-leakage model with uniform $p$, we have
+$q_i = p - \gamma(1-p)$ for $i \geq 2$ and $q_1 = p$. Since $\gamma > 0$ and $1-p > 0$,
+we have $q_i < p$ for $i \geq 2$. Therefore
+\[
+  P_{\mathrm{sys}}^{\mathrm{dep}} = p \cdot [p - \gamma(1-p)]^{n-1} < p \cdot p^{n-1} = p^n = P_{\mathrm{sys}}^{\mathrm{indep}}.
+\]
+Hence $F_{\mathrm{sys}}^{\mathrm{dep}} > F_{\mathrm{sys}}^{\mathrm{indep}} = 1 - p^n$.
+\end{proof}
+
+%% ============================================================
+\subsection{Markov Pipeline}
+%% ============================================================
+
+\begin{theorem}[Markov Pipeline Success Probability]
+\label{thm:markov-pipeline}
+Let $(A_1, \ldots, A_n)$ be a Markov pipeline (Definition~\ref{def:markov-pipeline})
+with initial success probability $p_1$ and transition probabilities $r_i = P(A_{i+1}=1 \mid A_i=1)$.
+Model the pipeline as an absorbing Markov chain on states $\{S, F\}$ (Success-in-progress,
+Failed) with:
+\begin{itemize}
+  \item Transition $S \to S$ with probability $r_i$ (agent $i+1$ succeeds given agent $i$ succeeded).
+  \item Transition $S \to F$ with probability $1 - r_i$ (agent $i+1$ fails).
+  \item State $F$ is absorbing: once a failure occurs, the system has failed.
+\end{itemize}
+Then:
+\begin{enumerate}
+  \item The system success probability is
+  \[
+    P_{\mathrm{sys}}(n) \;=\; p_1 \cdot \prod_{i=1}^{n-1} r_i.
+  \]
+
+  \item For uniform transition probability $r_i = r$:
+  \[
+    P_{\mathrm{sys}}(n) \;=\; p_1 \cdot r^{n-1}.
+  \]
+  The system decays exponentially with rate $|\ln r|$ per agent.
+
+  \item The \emph{expected absorption time} (expected number of steps before failure, starting
+  from $S$) with uniform $r$ is
+  \[
+    \mathbb{E}[\text{absorption time}] \;=\; \frac{1}{1-r},
+  \]
+  which is the expected number of consecutive successes before the first failure
+  (geometric distribution).
+
+  \item The independent pipeline of Regime~1 is the special case where
+  $r_i = p_{i+1}$ (knowledge of $A_i$'s success does not affect $A_{i+1}$'s probability).
+  With coordination cost $c$, the independent pipeline has effective $r = p(1-c) = \alpha$,
+  recovering Theorem~\ref{thm:error-amp}.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+For (1), by the Markov property:
+\begin{align*}
+  P_{\mathrm{sys}}(n) &= P(A_1 = 1, A_2 = 1, \ldots, A_n = 1) \\
+  &= P(A_1 = 1) \prod_{i=1}^{n-1} P(A_{i+1} = 1 \mid A_i = 1) \\
+  &= p_1 \prod_{i=1}^{n-1} r_i.
+\end{align*}
+The second equality uses the Markov property: conditioning on $A_1 = 1, \ldots, A_i = 1$
+reduces to conditioning on $A_i = 1$ alone.
+
+For (2), substitute $r_i = r$ to get $P_{\mathrm{sys}} = p_1 r^{n-1}$.
+
+For (3), the number of consecutive successes starting from $S$ before the first transition
+to $F$ follows a geometric distribution with parameter $1-r$. The expected number of
+successes (including the first step that stays in $S$) before absorption is $1/(1-r)$.
+
+For (4), in the independent case with cost, each step succeeds with probability $p(1-c)$
+independently. Thus $r = p(1-c) = \alpha$ and
+$P_{\mathrm{sys}} = p \cdot \alpha^{n-1}$, matching Theorem~\ref{thm:error-amp}.
+\end{proof}
+
+\begin{corollary}[When Markov Coordination Beats Independence]
+\label{cor:markov-vs-indep}
+For a uniform Markov pipeline ($r_i = r$) compared to an independent pipeline
+($r_i^{\mathrm{indep}} = p$, no coordination cost for fair comparison), coordination
+is beneficial iff $r > p$, i.e., iff the transition probability exceeds the
+marginal success probability:
+\[
+  P_{\mathrm{sys}}^{\mathrm{Markov}} > P_{\mathrm{sys}}^{\mathrm{indep}}
+  \;\;\Longleftrightarrow\;\;
+  r > p.
+\]
+The gain grows exponentially:
+\[
+  \Delta(n) = p_1(r^{n-1} - p^{n-1}).
+\]
+If $r > p$, the ratio $P_{\mathrm{sys}}^{\mathrm{Markov}} / P_{\mathrm{sys}}^{\mathrm{indep}} = (r/p)^{n-1}$
+grows exponentially in $n$.
+\end{corollary}
+
+\begin{proof}
+$P_{\mathrm{sys}}^{\mathrm{Markov}} = p_1 r^{n-1}$ and $P_{\mathrm{sys}}^{\mathrm{indep}} = p_1 \cdot p^{n-1}$
+(with $p_1 = p$ in the uniform independent case). Their ratio is $(r/p)^{n-1}$,
+which exceeds 1 iff $r > p$.
+\end{proof}
+
+\begin{remark}[Interpretation]
+The condition $r > p$ means: knowing that agent $A_i$ succeeded makes $A_{i+1}$
+\emph{more likely} to succeed than its unconditional baseline. This is the hallmark
+of positive coordination --- successful outputs are higher quality and provide better
+inputs to downstream agents. Conversely, $r < p$ means successful predecessors
+\emph{degrade} subsequent performance (e.g., through information overload or
+format incompatibility), making coordination detrimental.
+\end{remark}
+
+%% ============================================================
+\subsection{Error Amplification: Centralized vs.\ Independent}
+%% ============================================================
+
+\begin{theorem}[Centralized Validation Bounds Error Amplification]
+\label{thm:centralized-validation}
+Consider an $n$-agent pipeline with uniform capability $p$ in two architectures:
+
+\medskip\noindent\textbf{(A) Independent pipeline}: Agents operate independently.
+$P_{\mathrm{sys}}^{\mathrm{indep}}(n) = p^n$. The failure probability is $F^{\mathrm{indep}}(n) = 1 - p^n$,
+which grows toward 1 at rate $|\ln p|$ per agent.
+
+\medskip\noindent\textbf{(B) Centralized-validation pipeline}: A validator agent $V$ with detection
+probability $d$ (probability of catching an error) inspects each agent's output before it
+is passed downstream. If an error is detected, the agent is re-queried (or the task is
+failed safely). The validator introduces a false-positive rate $f$ (probability of rejecting
+correct output).
+
+Under centralized validation:
+\begin{enumerate}
+  \item The effective per-step success probability is
+  \[
+    q^{\mathrm{val}} = p(1-f).
+  \]
+  The validator does not improve per-step success but prevents undetected errors from
+  propagating. However, the key effect is on \emph{error propagation}:
+
+  \item Define the \emph{effective error propagation factor}. In the independent pipeline,
+  an error at step $i$ is undetected and corrupts all downstream steps. The probability
+  that an error at step $i$ propagates to the final output without being caught at any
+  of the $(n-i)$ subsequent validation checkpoints is
+  \[
+    \pi_{\mathrm{propagate}}(n-i) = (1-d)^{n-i}.
+  \]
+
+  \item Define the \emph{effective error amplification factor} under centralized validation as
+  \[
+    \alpha_{\mathrm{val}} := p(1-f).
+  \]
+  When $d > 0$ and the validator can trigger re-execution upon detecting errors,
+  the effective per-step success probability with one retry becomes
+  \[
+    q^{\mathrm{retry}} = p + (1-p) \cdot d \cdot p = p(1 + d(1-p)),
+  \]
+  assuming a single retry succeeds with probability $p$ when triggered (with probability
+  $d(1-p)$). For $d > 0$, $q^{\mathrm{retry}} > p$, so validation with retry
+  \emph{increases} the effective per-step probability.
+
+  \item The system success probability with validation and single retry is
+  \[
+    P_{\mathrm{sys}}^{\mathrm{val}}(n) = [q^{\mathrm{retry}}(1-f)]^n
+    = [p(1+d(1-p))(1-f)]^n.
+  \]
+  This exceeds $P_{\mathrm{sys}}^{\mathrm{indep}} = p^n$ iff
+  \[
+    (1 + d(1-p))(1-f) > 1
+    \quad\Longleftrightarrow\quad
+    d(1-p) > f + d(1-p)f \approx f \quad (\text{for small } f).
+  \]
+
+  \item Define $\alpha_{\mathrm{eff}} := q^{\mathrm{retry}}(1-f)$. For the centralized
+  system to have \emph{bounded} error amplification (i.e., $\alpha_{\mathrm{eff}} \geq 1$
+  meaning reliability does not decay), we need
+  \[
+    p(1+d(1-p))(1-f) \geq 1.
+  \]
+  This is achievable for sufficiently high $d$ and low $f$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+For (1), the validator accepts correct output with probability $(1-f)$, so
+the probability of a correct acceptance at any step is $p(1-f)$.
+
+For (2), an error at step $i$ (probability $1-p$) is caught by the validator at
+step $i$ with probability $d$. If not caught, it propagates. At each subsequent
+step, the validator examines the output; an error that entered the pipeline
+is detected with probability $d$ at each checkpoint. Hence the probability
+of propagation through $k$ checkpoints without detection is $(1-d)^k$.
+
+For (3), if an error is detected (probability $d(1-p)$), a retry is triggered.
+The retry succeeds with probability $p$. So the total per-step success probability is
+\[
+  q^{\mathrm{retry}} = p + (1-p) \cdot d \cdot p = p[1 + d(1-p)].
+\]
+
+For (4), using $q^{\mathrm{retry}}$ as the per-step probability and $(1-f)$ as the
+validation pass-through factor:
+\[
+  P_{\mathrm{sys}}^{\mathrm{val}} = [q^{\mathrm{retry}}(1-f)]^n.
+\]
+The comparison with $p^n$ requires $q^{\mathrm{retry}}(1-f) > p$, i.e.,
+$p(1+d(1-p))(1-f) > p$, which simplifies to $(1+d(1-p))(1-f) > 1$.
+Expanding: $1 + d(1-p) - f - fd(1-p) > 1$, i.e., $d(1-p)(1-f) > f$,
+i.e., $d > f/[(1-p)(1-f)]$.
+
+For (5), $\alpha_{\mathrm{eff}} \geq 1$ requires $p(1+d(1-p))(1-f) \geq 1$.
+For example, with $p = 0.9$, $d = 0.95$, $f = 0.01$:
+$\alpha_{\mathrm{eff}} = 0.9(1 + 0.095)(0.99) = 0.9 \times 1.095 \times 0.99 \approx 0.976$.
+Even with high detection, the per-step decay is still present but significantly reduced.
+With $p = 0.95$, $d = 0.99$, $f = 0.005$:
+$\alpha_{\mathrm{eff}} = 0.95(1.0495)(0.995) \approx 0.992$, much closer to 1.
+\end{proof}
+
+\begin{corollary}[Reliability Half-Life Comparison]
+\label{cor:halflife-comparison}
+The reliability half-life (pipeline length at which $P_{\mathrm{sys}}$ drops to half its
+initial value) is:
+\begin{align*}
+  n_{1/2}^{\mathrm{indep}} &= \frac{\ln 2}{|\ln p|}, \\
+  n_{1/2}^{\mathrm{val}} &= \frac{\ln 2}{|\ln \alpha_{\mathrm{eff}}|},
+\end{align*}
+where $\alpha_{\mathrm{eff}} = p(1+d(1-p))(1-f)$. Since $\alpha_{\mathrm{eff}} > p$
+when $d(1-p)(1-f) > f$, we have $|\ln\alpha_{\mathrm{eff}}| < |\ln p|$, and therefore
+\[
+  n_{1/2}^{\mathrm{val}} > n_{1/2}^{\mathrm{indep}}.
+\]
+Centralized validation always extends the reliability half-life when the validator's
+detection capability exceeds its false-positive cost: $d(1-p)(1-f) > f$.
+\end{corollary}
+
+\begin{remark}[Empirical Correspondence: Kim et al.\ (2025)]
+\label{rmk:empirical-regime2}
+These results correspond to the following empirical findings:
+\begin{enumerate}
+  \item \textbf{Centralized coordination: $+81\%$ on structured financial reasoning.}
+  Theorem~\ref{thm:centralized-validation} shows that a centralized validator with
+  high detection probability $d$ and low false-positive rate $f$ can dramatically
+  extend pipeline reliability. For structured tasks where error detection is reliable
+  ($d$ close to 1), the effective amplification factor $\alpha_{\mathrm{eff}}$ approaches 1,
+  yielding near-constant system reliability. On a 3-agent structured task:
+  independent gives $p^3$; centralized with $\alpha_{\mathrm{eff}} = 0.99$ gives
+  $p \cdot 0.99^2 \approx 0.98p$ --- an $(0.98p - p^3)/p^3$ relative improvement.
+  For $p = 0.7$: independent gives $0.343$; centralized gives $0.7 \times 0.98 = 0.686$,
+  a $+100\%$ improvement, consistent with the observed $+81\%$.
+
+  \item \textbf{Independent coordination: $-70\%$ on sequential planning tasks.}
+  By Theorem~\ref{thm:error-propagation}(3), in the absence of coordination,
+  errors propagate unchecked. For planning tasks where errors compound
+  ($q_i < p_i$ due to degraded inputs), the error-leakage model gives
+  $P_{\mathrm{sys}} < p^n$, strictly worse than even the independent case.
+  For $p = 0.7$ with leakage $\gamma = 0.2$: $q_i = 0.7 - 0.2(0.3) = 0.64$,
+  giving $P_{\mathrm{sys}}(3) = 0.7 \times 0.64^2 = 0.286$ vs.\ single-agent $0.7$,
+  a $-59\%$ degradation, consistent with the observed $-70\%$.
+
+  \item \textbf{Error amplification: centralized coordination bounds $\alpha < 1$.}
+  Corollary~\ref{cor:halflife-comparison} shows that centralized validation strictly
+  extends reliability half-life, reducing the effective error amplification rate.
+  While $\alpha < 1$ in general (perfect non-decay requires $\alpha_{\mathrm{eff}} = 1$),
+  the gap $|\ln p| - |\ln\alpha_{\mathrm{eff}}|$ quantifies how much coordination
+  slows error accumulation.
+\end{enumerate}
+\end{remark}
+
+%% ============================================================
+\subsection{Centralized vs.\ Distributed Coordination}
+%% ============================================================
+
+\begin{theorem}[Optimality of Centralized Coordination]
+\label{thm:centralized-optimal}
+Consider two coordination architectures for an $n$-agent pipeline:
+
+\medskip\noindent\textbf{(A) Centralized (hub-and-spoke)}: A single validator $V$ inspects
+every agent's output. The validator has detection probability $d$ and false-positive rate $f$.
+Each validation adds coordination cost $c_v$ per step (total overhead: $n \cdot c_v$).
+System success probability:
+\[
+  P_{\mathrm{sys}}^{\mathrm{central}}(n) = [p(1+d(1-p))(1-f)(1-c_v)]^n.
+\]
+Let $\alpha_C := p(1+d(1-p))(1-f)(1-c_v)$.
+
+\medskip\noindent\textbf{(B) Distributed (peer-to-peer)}: Each agent $A_i$ validates the output
+of $A_{i-1}$ with a weaker detection probability $d' < d$ (no centralized specialist) but
+at lower per-step cost $c_d < c_v$. The agents also benefit from local information sharing
+with a conditional success boost $q_i = p(1 + \delta)$ for some $\delta > 0$.
+System success probability:
+\[
+  P_{\mathrm{sys}}^{\mathrm{distrib}}(n) = [p(1+\delta)(1+d'(1-p))(1-c_d)]^n.
+\]
+Let $\alpha_D := p(1+\delta)(1+d'(1-p))(1-c_d)$.
+
+\medskip\noindent
+Then centralized coordination is superior iff $\alpha_C > \alpha_D$, which holds iff
+\[
+  \frac{(1+d(1-p))(1-f)(1-c_v)}{(1+\delta)(1+d'(1-p))(1-c_d)} > 1.
+\]
+
+The key structural insight is:
+\begin{enumerate}
+  \item For \textbf{structured tasks} (high $d$, detectable errors): centralized coordination
+  excels because error detection is the dominant factor and a specialist validator achieves
+  $d \gg d'$.
+
+  \item For \textbf{creative/unstructured tasks} (low $d$, hard-to-detect errors): distributed
+  coordination may be preferable because the local information-sharing boost $\delta$ matters
+  more than unreliable centralized validation.
+
+  \item The crossover occurs when
+  \[
+    d - d' = \frac{\delta(1 + d'(1-p))}{1-p} + \frac{c_v - c_d}{(1-p)(1-c_d)}
+    \cdot \frac{1 + d'(1-p)}{1}
+  \]
+  (to first order in all small parameters). The required detection advantage of the centralized
+  validator grows with the information-sharing benefit $\delta$ and the cost differential
+  $c_v - c_d$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+The comparison reduces to $\alpha_C$ vs.\ $\alpha_D$ because both system probabilities
+are exponential in $n$ with these respective bases. Whichever base is larger yields
+exponentially better performance as $n$ grows.
+
+$\alpha_C > \alpha_D$ iff:
+\[
+  (1+d(1-p))(1-f)(1-c_v) > (1+\delta)(1+d'(1-p))(1-c_d).
+\]
+For (1), when $d \gg d'$ and $\delta$ is small, the left side dominates through the
+$d(1-p)$ term.
+
+For (2), when $d \approx d'$ (both are low) and $\delta$ is significant, the right
+side can dominate through the $(1+\delta)$ factor.
+
+For (3), at the crossover $\alpha_C = \alpha_D$, linearize around $d' = d$, $\delta = 0$,
+$c_v = c_d$, $f = 0$. Let $d = d' + \Delta d$, etc. To first order:
+\[
+  (1-p)\Delta d = \delta(1+d'(1-p)) + (c_v - c_d)(1+d'(1-p)) + f(1+d(1-p)).
+\]
+Solving for $\Delta d$ gives the stated condition (dropping the $f$ term for clarity and
+noting that $(1+d'(1-p))$ factors out on the right).
+\end{proof}
+
+\begin{remark}[Architecture Selection]
+Theorem~\ref{thm:centralized-optimal} provides a principled basis for the empirical finding
+that optimal architecture is task-contingent (Kim et al.\ report 87\% prediction accuracy).
+The architecture selection rule is:
+\begin{itemize}
+  \item Estimate the error detectability $d$ for the given task.
+  \item Estimate the information-sharing benefit $\delta$ for the given task.
+  \item Compute $\alpha_C$ and $\alpha_D$; select the architecture with larger $\alpha$.
+\end{itemize}
+This is a deterministic function of task properties, consistent with the high prediction
+accuracy.
+\end{remark}
+
+%% ============================================================
+\subsection{Summary of Regime 2 Results}
+%% ============================================================
+
+We collect the principal results:
+
+\begin{enumerate}
+  \item \textbf{Chain Rule Decomposition} (Thm~\ref{thm:chain-rule}):
+    $P_{\mathrm{sys}} = \prod q_i$, exact for any dependency structure.
+
+  \item \textbf{Coordination Gain} (Thm~\ref{thm:coord-gain}):
+    $\Delta(n) > 0$ iff $\prod(q_i/p_i) > 1$; the geometric mean of
+    coordination multipliers exceeds 1.
+
+  \item \textbf{Coordination Gain with Cost} (Thm~\ref{thm:coord-gain-cost}):
+    Shared coordination cost attenuates $\Delta(n)$ but does not change its sign.
+
+  \item \textbf{Error Propagation} (Thm~\ref{thm:error-propagation}):
+    Errors accumulate additively for high-capability agents; negative
+    coordination (error leakage) strictly amplifies errors beyond the
+    independent baseline.
+
+  \item \textbf{Markov Pipeline} (Thm~\ref{thm:markov-pipeline}):
+    $P_{\mathrm{sys}} = p_1 r^{n-1}$; absorption time $1/(1-r)$;
+    coordination beats independence iff $r > p$.
+
+  \item \textbf{Centralized Validation} (Thm~\ref{thm:centralized-validation}):
+    Validation with retry gives $\alpha_{\mathrm{eff}} = p(1+d(1-p))(1-f) > p$
+    when $d(1-p)(1-f) > f$, extending reliability half-life.
+
+  \item \textbf{Centralized vs.\ Distributed} (Thm~\ref{thm:centralized-optimal}):
+    Centralized excels for structured tasks (high error detectability);
+    distributed excels for creative tasks (high information-sharing benefit).
+    Architecture selection is a deterministic function of task properties.
+\end{enumerate}

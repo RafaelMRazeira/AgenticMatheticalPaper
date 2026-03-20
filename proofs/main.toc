@@ -1,0 +1,62 @@
+\contentsline {section}{\numberline {1}Introduction}{4}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Notation}{4}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Relationship to Prior Work}{4}{subsection.1.2}%
+\contentsline {section}{\numberline {2}Primitive Definitions}{5}{section.2}%
+\contentsline {section}{\numberline {3}Regime 2 --- Dependent Pipeline Definitions}{6}{section.3}%
+\contentsline {section}{\numberline {4}Regime 1 --- Independent Agents (Multiplication Law)}{8}{section.4}%
+\contentsline {subsection}{\numberline {4.1}The Multiplication Law}{8}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Exponential Decay of Reliability}{8}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Heterogeneous Agents: AM--GM Bound}{9}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Critical Threshold}{9}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}Optimal Number of Agents}{10}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}Error Amplification in Independent Pipelines}{12}{subsection.4.6}%
+\contentsline {subsection}{\numberline {4.7}Throughput-Optimal Pipeline Length}{13}{subsection.4.7}%
+\contentsline {subsection}{\numberline {4.8}Correspondence with Empirical Findings}{13}{subsection.4.8}%
+\contentsline {subsection}{\numberline {4.9}Summary of Regime 1 Results}{14}{subsection.4.9}%
+\contentsline {section}{\numberline {5}Regime 2 --- Dependent Agents (Conditional Chains)}{15}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Chain Rule Decomposition}{15}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Coordination Gain Theorem}{15}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Error Propagation in Dependent Pipelines}{17}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Markov Pipeline}{18}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Error Amplification: Centralized vs.\ Independent}{19}{subsection.5.5}%
+\contentsline {subsection}{\numberline {5.6}Centralized vs.\ Distributed Coordination}{21}{subsection.5.6}%
+\contentsline {subsection}{\numberline {5.7}Summary of Regime 2 Results}{23}{subsection.5.7}%
+\contentsline {section}{\numberline {6}Regime 3 --- Parallel Redundancy (Ensemble Voting)}{24}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Definitions}{24}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Diminishing Returns}{24}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Optimal Parallel Ensemble Size with Cost}{25}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Majority Voting Threshold}{26}{subsection.6.4}%
+\contentsline {subsection}{\numberline {6.5}Parallel Always Beats Sequential}{26}{subsection.6.5}%
+\contentsline {subsection}{\numberline {6.6}Throughput Structure}{27}{subsection.6.6}%
+\contentsline {subsection}{\numberline {6.7}Error Suppression Comparison}{28}{subsection.6.7}%
+\contentsline {subsection}{\numberline {6.8}Architecture Selection with Error Constraints}{28}{subsection.6.8}%
+\contentsline {subsection}{\numberline {6.9}Preview: Series-Parallel Decomposition (Regime\nobreakspace {}4)}{29}{subsection.6.9}%
+\contentsline {subsection}{\numberline {6.10}Connection to Capability Saturation (Regime\nobreakspace {}5)}{30}{subsection.6.10}%
+\contentsline {section}{\numberline {7}Regime 4 --- Hybrid Topologies}{31}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Formal Definitions}{31}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Recursive Composition Theorem}{32}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Effective Reliability with Coordination Cost}{33}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Optimal Resource Allocation}{33}{subsection.7.4}%
+\contentsline {subsection}{\numberline {7.5}Generalized SP Allocation via Lagrange Multipliers}{36}{subsection.7.5}%
+\contentsline {subsection}{\numberline {7.6}Efficiency Metric and Unique Maximum}{36}{subsection.7.6}%
+\contentsline {subsection}{\numberline {7.7}General DAG Reliability}{38}{subsection.7.7}%
+\contentsline {subsection}{\numberline {7.8}Topology Selection and Empirical Correspondence}{40}{subsection.7.8}%
+\contentsline {subsection}{\numberline {7.9}Summary of Regime 4 Results}{41}{subsection.7.9}%
+\contentsline {section}{\numberline {8}Regime 5 --- Capability Saturation and Unified Scaling Law}{42}{section.8}%
+\contentsline {subsection}{\numberline {8.1}The Capability Ceiling Function}{42}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Saturation Threshold Theorem}{43}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}Coordination Cost Dominance}{45}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}Hybrid Saturation}{46}{subsection.8.4}%
+\contentsline {subsection}{\numberline {8.5}Architecture Selection Function}{47}{subsection.8.5}%
+\contentsline {subsection}{\numberline {8.6}Unified Scaling Law}{48}{subsection.8.6}%
+\contentsline {subsection}{\numberline {8.7}Empirical Correspondence}{51}{subsection.8.7}%
+\contentsline {subsection}{\numberline {8.8}The Saturation Phase Diagram}{53}{subsection.8.8}%
+\contentsline {subsection}{\numberline {8.9}Quantitative Predictions at Key Parameter Values}{53}{subsection.8.9}%
+\contentsline {subsection}{\numberline {8.10}Implications for System Design}{54}{subsection.8.10}%
+\contentsline {subsection}{\numberline {8.11}Summary of Regime 5 Results}{55}{subsection.8.11}%
+\contentsline {section}{\numberline {9}Discussion}{56}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Summary of Principal Results}{56}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Design Implications}{56}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}Assumptions and Limitations}{56}{subsection.9.3}%
+\contentsline {subsection}{\numberline {9.4}Open Problems}{57}{subsection.9.4}%
+\contentsline {section}{\numberline {10}Conclusion}{57}{section.10}%

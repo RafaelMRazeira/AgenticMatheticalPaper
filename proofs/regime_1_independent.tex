@@ -1,0 +1,478 @@
+\section{Regime 1 --- Independent Agents (Multiplication Law)}
+\label{sec:regime1}
+
+Throughout this section, let $(A_1, A_2, \ldots, A_n)$ be a sequential pipeline of
+agents as in Definition~\ref{def:pipeline}, with $A_i \sim \mathrm{Bernoulli}(p_i)$.
+Unless stated otherwise, the agents are assumed \textbf{mutually independent}.
+
+%% ============================================================
+\subsection{The Multiplication Law}
+%% ============================================================
+
+\begin{theorem}[Multiplication Law for Independent Pipelines]
+\label{thm:mult-law}
+If agents $A_1, \ldots, A_n$ are mutually independent with success probabilities
+$p_1, \ldots, p_n$, then
+\[
+  P_{\mathrm{sys}}(n) \;=\; \prod_{i=1}^{n} p_i.
+\]
+\end{theorem}
+
+\begin{proof}
+By Definition~\ref{def:psys},
+\[
+  P_{\mathrm{sys}}(n) = P\!\Bigl(\,\bigcap_{i=1}^{n} \{A_i = 1\}\Bigr).
+\]
+Since the $A_i$ are mutually independent, the probability of the intersection of
+independent events equals the product of their probabilities (this is the defining
+property of mutual independence applied to the events $\{A_i = 1\}$):
+\[
+  P\!\Bigl(\,\bigcap_{i=1}^{n} \{A_i = 1\}\Bigr)
+  \;=\; \prod_{i=1}^{n} P(A_i = 1)
+  \;=\; \prod_{i=1}^{n} p_i.
+  \qedhere
+\]
+\end{proof}
+
+%% ============================================================
+\subsection{Exponential Decay of Reliability}
+%% ============================================================
+
+\begin{theorem}[Exponential Decay]
+\label{thm:exp-decay}
+Let all agents have uniform capability $p \in (0,1)$. Then
+\[
+  P_{\mathrm{sys}}(n) \;=\; p^n \;=\; e^{\,n \ln p},
+\]
+which decays exponentially in $n$ at rate $|\ln p| = -\ln p > 0$.
+
+More precisely, for any target reliability $P_{\mathrm{sys}}(n) \geq \delta$ with
+$\delta \in (0,1)$, the maximum number of agents is
+\[
+  n_{\max}(\delta, p) \;=\; \Bigl\lfloor \frac{\ln \delta}{\ln p} \Bigr\rfloor.
+\]
+\end{theorem}
+
+\begin{proof}
+By Theorem~\ref{thm:mult-law} with $p_i = p$ for all $i$,
+\[
+  P_{\mathrm{sys}}(n) = p^n.
+\]
+Since $0 < p < 1$, we have $\ln p < 0$, so $p^n = e^{n \ln p}$ is a strictly
+decreasing exponential function of $n$. The decay rate per agent is
+\[
+  -\frac{d}{dn}\ln P_{\mathrm{sys}}(n) = -\ln p = |\ln p| > 0.
+\]
+
+For the bound, require $p^n \geq \delta$. Taking logarithms (note $\ln p < 0$, so
+the inequality reverses):
+\[
+  n \ln p \geq \ln \delta
+  \;\;\Longleftrightarrow\;\;
+  n \leq \frac{\ln \delta}{\ln p}.
+\]
+Since $n$ must be a positive integer, $n_{\max} = \lfloor \ln\delta / \ln p \rfloor$.
+\end{proof}
+
+\begin{corollary}[Half-Life of a Pipeline]
+\label{cor:half-life}
+The number of agents at which system reliability drops to half the single-agent
+capability is
+\[
+  n_{1/2} \;=\; \Bigl\lfloor \frac{\ln(1/2)}{\ln p} \Bigr\rfloor + 1
+  \;=\; \Bigl\lfloor \frac{\ln 2}{|\ln p|} \Bigr\rfloor + 1.
+\]
+For high-capability agents ($p$ close to 1), using $\ln p \approx -(1-p)$:
+\[
+  n_{1/2} \;\approx\; \frac{\ln 2}{1-p}.
+\]
+\end{corollary}
+
+\begin{proof}
+We seek the smallest $n$ such that $p^n \leq p/2$ (half the single-agent reliability).
+Dividing by $p$, this is $p^{n-1} \leq 1/2$, i.e., $(n-1) \geq \ln(1/2)/\ln p =
+\ln 2 / |\ln p|$. The approximation follows from the first-order Taylor expansion
+$\ln p = \ln(1-(1-p)) \approx -(1-p)$ for $p$ near 1.
+\end{proof}
+
+%% ============================================================
+\subsection{Heterogeneous Agents: AM--GM Bound}
+%% ============================================================
+
+\begin{lemma}[Uniform Capability Maximizes System Reliability]
+\label{lem:am-gm}
+Among all pipelines of $n$ independent agents with a fixed sum of capabilities
+$\sum_{i=1}^{n} p_i = S$ (where $S \leq n$), the system success probability
+$P_{\mathrm{sys}} = \prod p_i$ is maximized when $p_i = S/n$ for all $i$.
+
+Equivalently, for any fixed arithmetic mean $\bar{p} = S/n$:
+\[
+  \prod_{i=1}^{n} p_i \;\leq\; \bar{p}^{\,n},
+\]
+with equality iff $p_1 = p_2 = \cdots = p_n$.
+\end{lemma}
+
+\begin{proof}
+This is the AM--GM inequality applied in logarithmic form. Since $\ln$ is concave,
+Jensen's inequality gives
+\[
+  \frac{1}{n}\sum_{i=1}^{n} \ln p_i \;\leq\; \ln\!\Bigl(\frac{1}{n}\sum_{i=1}^{n} p_i\Bigr) = \ln \bar{p},
+\]
+hence $\sum \ln p_i \leq n \ln \bar{p}$, i.e., $\prod p_i \leq \bar{p}^n$.
+Equality in Jensen's inequality holds iff all $p_i$ are equal.
+\end{proof}
+
+%% ============================================================
+\subsection{Critical Threshold}
+%% ============================================================
+
+\begin{theorem}[Critical Threshold for Beneficial Agent Addition]
+\label{thm:critical-threshold}
+Consider a uniform-capability pipeline with per-link coordination cost $c \in [0,1)$.
+The effective system success probability is (Definition~\ref{def:coord-cost}):
+\[
+  P_{\mathrm{eff}}(n) \;=\; p^n \cdot (1-c)^{n-1}.
+\]
+
+Adding an $(n+1)$-th agent is beneficial (i.e., $P_{\mathrm{eff}}(n+1) > P_{\mathrm{eff}}(n)$) if
+and only if
+\[
+  p(1-c) > 1.
+\]
+
+Therefore the \emph{critical threshold} is
+\[
+  \boxed{p^* \;=\; \frac{1}{1-c}.}
+\]
+
+\begin{itemize}
+  \item For $p > p^*$: every additional agent \emph{increases} effective system reliability.
+  \item For $p < p^*$: every additional agent \emph{decreases} effective system reliability.
+  \item For $p = p^*$: $P_{\mathrm{eff}}$ is constant in $n$.
+\end{itemize}
+
+Note: Since $p \leq 1$ and $p^* = 1/(1-c)$, the condition $p > p^*$ can only be
+satisfied when $c = 0$ and $p = 1$. For any $c > 0$, we have $p^* > 1$, which means
+$p < p^*$ always holds --- adding agents to a pipeline with coordination cost always
+degrades performance. This is the fundamental bottleneck of sequential architectures.
+\end{theorem}
+
+\begin{proof}
+Compute the ratio:
+\[
+  \frac{P_{\mathrm{eff}}(n+1)}{P_{\mathrm{eff}}(n)}
+  \;=\; \frac{p^{n+1}(1-c)^{n}}{p^{n}(1-c)^{n-1}}
+  \;=\; p(1-c).
+\]
+This ratio is independent of $n$. We have:
+\begin{align*}
+  P_{\mathrm{eff}}(n+1) > P_{\mathrm{eff}}(n)
+  &\;\Longleftrightarrow\; p(1-c) > 1
+  \;\Longleftrightarrow\; p > \frac{1}{1-c} = p^*.
+\end{align*}
+
+Since $c \in [0,1)$, we have $1-c \in (0,1]$, hence $p^* = 1/(1-c) \geq 1$.
+Because $p \leq 1$ by definition, the condition $p > p^*$ requires $p^* < 1$,
+which is impossible. When $c = 0$, $p^* = 1$ and the condition becomes $p > 1$,
+never satisfied. Thus for $c > 0$, $p^* > 1 > p$ strictly, and adding agents
+always reduces $P_{\mathrm{eff}}$.
+\end{proof}
+
+\begin{remark}[Interpretation for Zero Coordination Cost]
+\label{rmk:zero-cost}
+When $c = 0$ (no coordination overhead), the effective probability reduces to
+$P_{\mathrm{eff}}(n) = p^n$, which is still decreasing for $p < 1$. The critical threshold
+$p^* = 1$ means that only a perfect agent ($p = 1$) can be added without degradation.
+This confirms that the sequential pipeline is inherently fragile: it is the
+multiplicative structure itself, not just coordination cost, that drives exponential
+decay.
+\end{remark}
+
+%% ============================================================
+\subsection{Optimal Number of Agents}
+%% ============================================================
+
+The preceding theorem shows that in a pure sequential pipeline, adding agents always
+hurts when $c > 0$. This means the trivially optimal pipeline length is $n^* = 1$.
+However, this result assumes agents perform identical tasks. A more realistic model
+assumes that the task \emph{requires} decomposition: a task of complexity $T$ must be
+divided among agents, and more agents means each agent handles a simpler subtask,
+increasing its per-subtask success probability.
+
+\begin{definition}[Task Decomposition Model]
+\label{def:task-decomp}
+A task of complexity $T > 0$ is divided among $n$ agents. Each agent handles a subtask
+of complexity $T/n$. The per-agent success probability is a decreasing function of
+subtask complexity:
+\[
+  p(n) \;=\; g\!\left(\frac{T}{n}\right),
+\]
+where $g : [0, \infty) \to [0,1]$ is a decreasing function with $g(0) = 1$ and
+$\lim_{x \to \infty} g(x) = 0$. A natural choice is the exponential model:
+\[
+  p(n) \;=\; e^{-T/n}.
+\]
+\end{definition}
+
+\begin{theorem}[Optimal Pipeline Length --- Exponential Decomposition]
+\label{thm:optimal-n}
+Under the exponential task decomposition model $p(n) = e^{-T/n}$ with per-link
+coordination cost $c \in (0,1)$, the effective system probability is
+\[
+  P_{\mathrm{eff}}(n) \;=\; e^{-T} \cdot (1-c)^{n-1}.
+\]
+This is maximized at $n^* = 1$ for all $T > 0$ and $c > 0$.
+\end{theorem}
+
+\begin{proof}
+Substitute $p(n) = e^{-T/n}$ into $P_{\mathrm{eff}}$:
+\[
+  P_{\mathrm{eff}}(n)
+  = \bigl(e^{-T/n}\bigr)^n \cdot (1-c)^{n-1}
+  = e^{-T} \cdot (1-c)^{n-1}.
+\]
+The factor $e^{-T}$ is independent of $n$. Since $(1-c) < 1$, the factor $(1-c)^{n-1}$
+is strictly decreasing in $n$. Hence $P_{\mathrm{eff}}$ is maximized at $n = 1$, where
+$P_{\mathrm{eff}}(1) = e^{-T}$.
+\end{proof}
+
+\begin{remark}
+Theorem~\ref{thm:optimal-n} reveals a degenerate case: the exponential decomposition
+$p(n) = e^{-T/n}$ satisfies $[p(n)]^n = e^{-T}$ identically, so task decomposition
+yields \emph{no net benefit} to the multiplicative product. All benefit from simpler
+subtasks is exactly canceled by having more agents. Coordination cost then strictly
+favors fewer agents. To obtain a non-trivial optimum we need decomposition that
+yields a net benefit exceeding coordination cost.
+\end{remark}
+
+\begin{definition}[Power-Law Decomposition Model]
+\label{def:power-decomp}
+A more favorable decomposition model assumes per-agent success probability
+\[
+  p(n) \;=\; 1 - \left(\frac{T}{n}\right)^{\!\beta}
+\]
+for some $\beta > 0$ and $T/n < 1$ (i.e., $n > T$). The parameter $\beta$ controls
+how rapidly success probability improves as subtask complexity decreases.
+\end{definition}
+
+\begin{theorem}[Optimal Pipeline Length --- General Decomposition]
+\label{thm:optimal-n-general}
+Let $p(n)$ be a decomposition model such that the log-effective probability
+\[
+  \ell(n) \;:=\; \ln P_{\mathrm{eff}}(n) \;=\; n \ln p(n) + (n-1)\ln(1-c)
+\]
+is a concave function of $n$ (treating $n$ as continuous). Then the optimal pipeline
+length $n^*$ satisfies
+\[
+  \boxed{\ln p(n^*) + n^* \cdot \frac{p'(n^*)}{p(n^*)} + \ln(1-c) = 0.}
+\]
+Equivalently,
+\[
+  n^* \cdot \frac{p'(n^*)}{p(n^*)} \;=\; -\ln p(n^*) - \ln(1-c)
+  \;=\; -\ln\!\bigl[p(n^*)(1-c)\bigr].
+\]
+\end{theorem}
+
+\begin{proof}
+Differentiate $\ell(n)$ with respect to $n$ (treating $n$ as continuous):
+\[
+  \ell'(n) = \ln p(n) + n \cdot \frac{p'(n)}{p(n)} + \ln(1-c).
+\]
+Setting $\ell'(n^*) = 0$ gives the stated equation. If $\ell$ is concave, this
+critical point is a global maximum.
+\end{proof}
+
+\begin{corollary}[Explicit Solution for Near-Perfect Agents]
+\label{cor:optimal-approx}
+When $p$ is close to 1 (high capability), write $p(n) = 1 - \epsilon(n)$ where
+$\epsilon(n) \ll 1$. Then $\ln p(n) \approx -\epsilon(n)$ and $p'(n)/p(n) \approx
+-\epsilon'(n)$. The optimality condition becomes
+\[
+  -\epsilon(n^*) - n^* \epsilon'(n^*) + \ln(1-c) = 0.
+\]
+For the power-law model $\epsilon(n) = (T/n)^\beta$ with $\epsilon'(n) =
+-\beta T^\beta / n^{\beta+1}$:
+\[
+  -\frac{T^\beta}{(n^*)^\beta} + \frac{\beta T^\beta}{(n^*)^\beta} + \ln(1-c) = 0,
+\]
+giving
+\[
+  \boxed{n^* \;=\; T \cdot \left(\frac{\beta - 1}{|\ln(1-c)|}\right)^{\!1/\beta}}
+  \quad (\text{for } \beta > 1).
+\]
+For $\beta \leq 1$, no finite optimum exists (the numerator is non-positive), meaning
+decomposition benefit is too weak to overcome coordination cost.
+\end{corollary}
+
+\begin{proof}
+Substituting $\epsilon(n) = (T/n)^\beta$:
+\[
+  -\frac{T^\beta}{n^\beta} + \beta \cdot \frac{T^\beta}{n^\beta} + \ln(1-c) = 0
+  \;\;\Longrightarrow\;\;
+  (\beta - 1) \frac{T^\beta}{n^\beta} = -\ln(1-c) = |\ln(1-c)|.
+\]
+Solving for $n$:
+\[
+  n^\beta = \frac{(\beta-1) T^\beta}{|\ln(1-c)|}
+  \;\;\Longrightarrow\;\;
+  n = T \left(\frac{\beta-1}{|\ln(1-c)|}\right)^{1/\beta}.
+\]
+This requires $\beta > 1$ for the expression to be positive and real.
+\end{proof}
+
+%% ============================================================
+\subsection{Error Amplification in Independent Pipelines}
+%% ============================================================
+
+\begin{theorem}[Error Amplification Factor]
+\label{thm:error-amp}
+For a uniform-capability pipeline with per-agent success probability $p$ and
+coordination cost $c$, define the \emph{amplification factor} $\alpha := p(1-c)$.
+Then:
+\[
+  P_{\mathrm{eff}}(n) = \frac{p}{1-c} \cdot \alpha^n = \frac{p \cdot \alpha^n}{1-c}.
+\]
+Equivalently, $P_{\mathrm{eff}}(n) = p \cdot \alpha^{n-1}$.
+
+The system failure probability satisfies:
+\[
+  F_{\mathrm{sys}}(n) = 1 - p \cdot \alpha^{n-1}.
+\]
+
+For $\alpha < 1$ (which holds whenever $p < 1$ or $c > 0$ with $p \leq 1$):
+\begin{enumerate}
+  \item $P_{\mathrm{eff}}(n) \to 0$ exponentially as $n \to \infty$.
+  \item $F_{\mathrm{sys}}(n) \to 1$ exponentially as $n \to \infty$.
+  \item The \emph{reliability half-life} is $n_{1/2} = 1 + \ln 2 / |\ln \alpha|$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+From Definition~\ref{def:coord-cost}:
+\[
+  P_{\mathrm{eff}}(n) = p^n (1-c)^{n-1} = p \cdot [p(1-c)]^{n-1} = p \cdot \alpha^{n-1}.
+\]
+Since $\alpha = p(1-c)$ and both $p \leq 1$, $(1-c) \leq 1$ with at least one strict,
+we have $\alpha < 1$. Therefore $\alpha^{n-1} \to 0$ as $n \to \infty$, giving
+conclusions (1) and (2).
+
+For (3), set $P_{\mathrm{eff}}(n_{1/2}) = P_{\mathrm{eff}}(1)/2 = p/2$:
+\[
+  p \cdot \alpha^{n_{1/2}-1} = p/2
+  \;\Longrightarrow\;
+  \alpha^{n_{1/2}-1} = 1/2
+  \;\Longrightarrow\;
+  n_{1/2} = 1 + \frac{\ln 2}{|\ln \alpha|}.
+  \qedhere
+\]
+\end{proof}
+
+%% ============================================================
+\subsection{Throughput-Optimal Pipeline Length}
+%% ============================================================
+
+\begin{theorem}[Universal Throughput Optimum]
+\label{thm:throughput-optimum}
+Define the \emph{throughput} of a uniform-capability pipeline as $\Theta(n) := n \cdot P_{\mathrm{sys}}(n) = n \, p^n$,
+representing the expected number of successfully completed subtasks. Then:
+\begin{enumerate}
+  \item The throughput-maximizing pipeline length (treating $n$ as continuous) is
+  \[
+    n^* \;=\; -\frac{1}{\ln p}.
+  \]
+  \item At this optimum, the system success probability attains the \emph{universal constant}
+  \[
+    P_{\mathrm{sys}}(n^*) \;=\; e^{-1} \;\approx\; 0.3679,
+  \]
+  independent of $p$.
+  \item The maximum throughput is $\Theta^* = n^* \cdot e^{-1} = -1/(e \ln p)$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+For (1), differentiate $\Theta(n) = n p^n$ with respect to $n$:
+\[
+  \Theta'(n) = p^n + n p^n \ln p = p^n(1 + n \ln p).
+\]
+Setting $\Theta'(n^*) = 0$ and noting $p^{n^*} > 0$, we get $1 + n^* \ln p = 0$,
+hence $n^* = -1/\ln p$. The second derivative $\Theta''(n^*) = p^{n^*} \ln p < 0$
+confirms this is a maximum.
+
+For (2), substitute $n^* = -1/\ln p$ into $P_{\mathrm{sys}} = p^n$:
+\[
+  P_{\mathrm{sys}}(n^*) = p^{-1/\ln p} = e^{\,\ln p \cdot (-1/\ln p)} = e^{-1}.
+\]
+
+Statement (3) follows immediately: $\Theta^* = n^* \cdot e^{-1} = -1/(e \ln p)$.
+\end{proof}
+
+\begin{remark}
+The universality of $P_{\mathrm{sys}}(n^*) = e^{-1}$ means that \emph{every} throughput-optimal
+pipeline, regardless of agent capability $p$, operates at the same system success probability.
+Higher-capability agents simply allow longer pipelines (larger $n^*$) while maintaining
+this fixed reliability. This provides a natural bridge to Regime~2: if dependent agents
+can keep $P_{\mathrm{sys}} > e^{-1}$ at the same pipeline length, coordination is provably beneficial.
+\end{remark}
+
+%% ============================================================
+\subsection{Correspondence with Empirical Findings}
+%% ============================================================
+
+\begin{remark}[Empirical Correspondence]
+\label{rmk:empirical}
+The results of this section correspond to the following empirical findings from
+Kim et al.\ (2025):
+
+\begin{enumerate}
+\item \textbf{Independent coordination: $-70\%$ on sequential planning tasks.}
+  Theorem~\ref{thm:critical-threshold} shows that for any $c > 0$, adding
+  independent agents to a sequential pipeline always degrades performance.
+  With uniform $p \approx 0.7$ and modest $c \approx 0.05$, a 3-agent pipeline gives
+  $P_{\mathrm{eff}}(3) = 0.7^3 \cdot 0.95^2 \approx 0.310$, a 56\% reduction from the
+  single-agent $P_{\mathrm{eff}}(1) = 0.7$.
+
+\item \textbf{Error amplification: independent agents amplify errors $\sim\alpha^n$.}
+  Theorem~\ref{thm:error-amp} derives this exactly with $\alpha = p(1-c) < 1$.
+
+\item \textbf{Tool-coordination tradeoff: overhead compounds with environment complexity.}
+  In the task decomposition model (Theorem~\ref{thm:optimal-n-general}), increasing
+  task complexity $T$ shifts the optimal $n^*$ and changes the balance between
+  decomposition benefit and coordination cost. The coordination overhead
+  $(1-c)^{n-1}$ compounds geometrically with pipeline length.
+
+\item \textbf{Capability saturation at $\sim 45\%$ baseline.}
+  For $p = 0.45$ and $c = 0$, a 2-agent pipeline gives $0.45^2 = 0.2025$, already
+  below the single-agent baseline. This prefigures the saturation result of Regime~5:
+  the critical threshold $p^* = 1/(1-c)$ means sequential coordination is generically
+  unprofitable, and the saturation threshold emerges from the balance with parallel
+  architectures (Regime~3).
+\end{enumerate}
+\end{remark}
+
+%% ============================================================
+\subsection{Summary of Regime 1 Results}
+%% ============================================================
+
+We collect the principal results:
+
+\begin{enumerate}
+  \item \textbf{Multiplication Law} (Thm~\ref{thm:mult-law}):
+    $P_{\mathrm{sys}} = \prod p_i$.
+
+  \item \textbf{Exponential Decay} (Thm~\ref{thm:exp-decay}):
+    $P_{\mathrm{sys}} = p^n = e^{n\ln p}$, decaying at rate $|\ln p|$ per agent.
+
+  \item \textbf{AM--GM Bound} (Lem~\ref{lem:am-gm}):
+    Heterogeneous agents are strictly worse than uniform agents with the same mean.
+
+  \item \textbf{Critical Threshold} (Thm~\ref{thm:critical-threshold}):
+    $p^* = 1/(1-c)$; for $c > 0$, $p^* > 1$, so adding agents always hurts.
+
+  \item \textbf{Optimal Pipeline Length} (Thm~\ref{thm:optimal-n-general},
+    Cor~\ref{cor:optimal-approx}):
+    Under power-law decomposition with $\beta > 1$:
+    $n^* = T[(\beta-1)/|\ln(1-c)|]^{1/\beta}$.
+
+  \item \textbf{Error Amplification} (Thm~\ref{thm:error-amp}):
+    $\alpha = p(1-c)$; reliability decays as $p\alpha^{n-1}$.
+\end{enumerate}
